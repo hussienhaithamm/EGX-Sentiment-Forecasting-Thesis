@@ -1,0 +1,7 @@
+ticker,language,raw_articles,cleaned_articles,sentiment_labeled_articles,positive_articles,negative_articles,neutral_articles,first_article_date,last_article_date
+CIB,en,317,310,310,169,57,84,2012-09-02,2026-03-25
+CIB,ar,739,703,703,0,0,703,2010-08-11,2026-03-17
+TMG,en,191,188,188,120,25,43,2014-08-13,2026-04-19
+TMG,ar,418,409,409,0,0,409,2010-08-11,2026-04-22
+OIH,en,225,87,87,31,30,26,2018-06-06,2026-02-25
+OIH,ar,472,215,215,0,0,215,2018-06-06,2026-02-25

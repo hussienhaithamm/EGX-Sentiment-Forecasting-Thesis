@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "egx-sentiment-forecasting-thesis"
+version = "0.1.0"
+description = "Sentiment-only EGX stock direction and return forecasting pipeline for CIB, TMG, and OIH."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=1.5.0",
+    "numpy>=1.23.0",
+    "scikit-learn>=1.2.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "yfinance>=0.2.0",
+    "torch>=2.0.0",
+    "transformers>=4.40.0",
+]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["egx_direction*", "news_pipeline*"]
+
+[tool.setuptools]
+py-modules = ["data_loader"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

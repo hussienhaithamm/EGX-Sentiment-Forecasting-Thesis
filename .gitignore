@@ -1,0 +1,42 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.venv/
+venv/
+env/
+
+logs/
+*.log
+vite-dev.log
+node_modules/
+dist/
+.vite/
+
+# Model and package caches
+.cache/
+models/
+model_cache/
+transformers_cache/
+huggingface_cache/
+wandb/
+
+# Temporary experiment clutter. Final CSV/JSON artifacts under outputs/ are tracked.
+outputs/_tmp*/
+outputs/tmp*/
+outputs/**/__pycache__/
+outputs/**/*.pkl
+outputs/**/*.npy
+
+# Local credentials and environment files
+.env
+.env.*
+*.pem
+*.key
+*.token

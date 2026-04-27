@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-04-26T18:24:11.354991+00:00",
+  "raw_news_dir": "data/raw/news/mubasher_sentiment_only",
+  "processed_news_dir": "data/processed/news/sentiment_ready",
+  "output_dir": "outputs/sentiment_only_pipeline",
+  "tickers": [
+    "CIB",
+    "TMG",
+    "OIH"
+  ],
+  "languages": [
+    "en",
+    "ar"
+  ],
+  "min_match_confidence": "medium",
+  "rows": {
+    "raw_scraped_articles": 2362,
+    "cleaned_articles": 1912,
+    "sentiment_labeled_articles": 1912
+  },
+  "paths": {
+    "raw_scraped_articles": "data/processed/news/sentiment_ready/raw_scraped_articles.jsonl",
+    "cleaned_articles_csv": "data/processed/news/sentiment_ready/cleaned_articles.csv",
+    "cleaned_articles_jsonl": "data/processed/news/sentiment_ready/cleaned_articles.jsonl",
+    "sentiment_labeled_articles_csv": "data/processed/news/sentiment_ready/sentiment_labeled_articles.csv",
+    "sentiment_labeled_articles_jsonl": "data/processed/news/sentiment_ready/sentiment_labeled_articles.jsonl",
+    "dataset_summary_by_ticker_language": "data/processed/news/sentiment_ready/dataset_summary_by_ticker_language.csv",
+    "failed_pages": "data/raw/news/mubasher_sentiment_only/failed_pages.jsonl",
+    "failed_articles": "data/raw/news/mubasher_sentiment_only/failed_articles.jsonl"
+  },
+  "dataset_sizes": [
+    {
+      "ticker": "CIB",
+      "raw_articles": 1056,
+      "prepared_articles": 1013,
+      "scored_articles": 1013,
+      "english_articles": 310,
+      "arabic_articles": 703,
+      "price_rows": 2467,
+      "first_price_date": "2016-04-21",
+      "last_price_date": "2026-04-20",
+      "first_article_date": "2010-08-11",
+      "last_article_date": "2026-03-25"
+    },
+    {
+      "ticker": "TMG",
+      "raw_articles": 609,
+      "prepared_articles": 597,
+      "scored_articles": 597,
+      "english_articles": 188,
+      "arabic_articles": 409,
+      "price_rows": 2463,
+      "first_price_date": "2016-04-21",
+      "last_price_date": "2026-04-20",
+      "first_article_date": "2010-08-11",
+      "last_article_date": "2026-04-22"
+    },
+    {
+      "ticker": "OIH",
+      "raw_articles": 697,
+      "prepared_articles": 302,
+      "scored_articles": 302,
+      "english_articles": 87,
+      "arabic_articles": 215,
+      "price_rows": 2464,
+      "first_price_date": "2016-04-21",
+      "last_price_date": "2026-04-20",
+      "first_article_date": "2018-06-06",
+      "last_article_date": "2026-02-25"
+    }
+  ]
+}
