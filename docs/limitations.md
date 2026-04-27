@@ -8,5 +8,6 @@
 - The project intentionally excludes OHLCV and technical indicators from the main benchmark; this isolates sentiment, but it also makes the forecasting task harder.
 - The final multi-horizon run uses a 250-row refit cadence for runtime practicality. It remains chronological, but exact metrics may differ from a more frequent refit cadence.
 - Return correlations are small and unstable, so regression outputs should not be interpreted as economically strong forecasts.
+- Phase 7 overfitting checks rejected the raw highest event-weighted accuracy result as the accepted final model; the validity-passing candidate is weaker and still close to random on balanced accuracy.
 
 Recommended thesis framing: sentiment-only forecasting provides limited evidence of predictive value, but the results do not support using news sentiment as a standalone trading signal for the selected EGX stocks.

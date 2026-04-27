@@ -76,6 +76,12 @@ PYTHONPATH=src python3 scripts/run_multi_horizon_event_evaluation.py \
 
 Final outputs are saved in `outputs/final_sentiment_experiments/`.
 
+Run the Phase 7 robustness and validity checks:
+
+```bash
+PYTHONPATH=src python3 scripts/run_phase7_validity_checks.py
+```
+
 ## Key Final Outputs
 
 - `horizon_comparison.csv`
@@ -87,6 +93,11 @@ Final outputs are saved in `outputs/final_sentiment_experiments/`.
 - `event_feature_panel.csv`
 - `event_model_metrics.csv`
 - `event_vs_all_news_comparison.csv`
+- `leakage_check_report.md`
+- `coverage_analysis.csv`
+- `coverage_analysis.md`
+- `overfitting_report.csv`
+- `overfitting_report.md`
 
 ## Tests
 

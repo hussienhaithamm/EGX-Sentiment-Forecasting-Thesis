@@ -36,3 +36,16 @@ PYTHONPATH=src python3 scripts/run_multi_horizon_event_evaluation.py \
   --classification-c-grid 0.05 0.1 0.5 \
   --regression-alpha-grid 10.0
 ```
+
+## Phase 7 Validity Checks
+
+```bash
+PYTHONPATH=src python3 scripts/run_phase7_validity_checks.py
+```
+
+This generates leakage, coverage, and overfitting reports under `outputs/final_sentiment_experiments/`. The accepted final model must pass:
+
+- no detected leakage,
+- no explicit overfitting flag,
+- validation and test accuracy/balanced accuracy/F1 at or above 0.50,
+- reproducible output from the saved dataset and scripts.

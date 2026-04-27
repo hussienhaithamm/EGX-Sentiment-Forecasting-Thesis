@@ -69,14 +69,40 @@ Notable positives:
 
 ## Best Final Results
 
-Within the final multi-horizon/event run:
+Before Phase 7 overfitting filtering, the strongest raw accuracy result in the final multi-horizon/event run was:
 
-- Best accuracy: OIH, 5-day, event-weighted bilingual, accuracy `0.571`, F1 `0.706`.
+- OIH, 5-day, event-weighted bilingual: accuracy `0.571`, balanced accuracy `0.511`, F1 `0.706`.
+
+Phase 7 flagged that row for overfitting:
+
+- train accuracy `0.609`
+- validation accuracy `0.485`
+- test accuracy `0.571`
+- overfit flag: `True`
+
+Therefore it is exploratory and should not be presented as the accepted final model.
+
+The accepted validity-passing candidate is:
+
+- OIH, 5-day, all-news bilingual
+- validation accuracy/balanced accuracy/F1: `0.522` / `0.525` / `0.546`
+- test accuracy/balanced accuracy/F1/sign accuracy: `0.532` / `0.503` / `0.630` / `0.585`
+- overfit flag: `False`
+
+Other final-run bests:
+
 - Best balanced accuracy: TMG, 3-day, all-news bilingual, balanced accuracy `0.518`.
-- Best F1: OIH, 5-day, event-only bilingual, F1 `0.709`.
 - Best return sign accuracy: OIH, 5-day, all-news bilingual, sign accuracy `0.585`, return correlation `0.034`.
 
-Across all observed project runs, the previous enhanced OIH 5-day result still has the highest raw accuracy (`0.573`) and F1 (`0.710`), narrowly above the final OIH 5-day event-weighted result (`0.571` accuracy, `0.706` F1). In both cases, balanced accuracy remains weak at about `0.51`.
+Across all observed project runs, the previous enhanced OIH 5-day result still has the highest raw accuracy (`0.573`) and F1 (`0.710`), but Phase 7 shows why raw accuracy alone should not be used as the final acceptance criterion. Balanced accuracy remains weak at about `0.50` to `0.52`.
+
+## Phase 7 Validity Results
+
+- Leakage checks: `PASS`; 45 panel checks, 43,880 validation/test prediction rows checked, 0 history violations.
+- Coverage: local scrape matches live Mubasher listing pages for all ticker/language pairs checked.
+- Sparse coverage remains material: prior-7-day article coverage is CIB `0.569`, TMG `0.387`, OIH `0.305`.
+- Overfitting: 15 of 45 experiment rows were flagged for train/test overfitting.
+- The final accepted model is OIH 5-day all-news bilingual, not the higher raw-accuracy event-weighted candidate.
 
 ## Interpretation
 
