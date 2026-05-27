@@ -1,0 +1,31 @@
+{
+  "args": {
+    "sentiment_labeled_path": "data/processed/news/sentiment_ready/sentiment_labeled_articles.csv",
+    "output_dir": "outputs/arabert_financial_adaptation",
+    "base_model": "aubmindlab/bert-base-arabertv02",
+    "max_length": 256,
+    "mlm_probability": 0.15,
+    "run_mlm_training": true,
+    "max_steps": 20,
+    "epochs": 1.0,
+    "batch_size": 2,
+    "human_labeled_csv": null
+  },
+  "corpus": {
+    "train_path": "outputs/arabert_financial_adaptation/corpus/arabic_financial_mlm_train.txt",
+    "validation_path": "outputs/arabert_financial_adaptation/corpus/arabic_financial_mlm_validation.txt",
+    "train_articles": 1061,
+    "validation_articles": 266,
+    "first_article": "2010-08-11T03:00:00+00:00",
+    "last_article": "2026-04-22T16:24:26+00:00"
+  },
+  "mlm_result": {
+    "status": "COMPLETED",
+    "model_dir": "outputs/arabert_financial_adaptation/arabert_financial_mlm",
+    "train_loss": 0.9675959676504136,
+    "eval_loss": 0.8218273341655731,
+    "max_steps": 20,
+    "device": "cpu"
+  },
+  "supervised_finetuning_status": "requires_human_labels"
+}

@@ -33,6 +33,30 @@ outputs/tmp*/
 outputs/**/__pycache__/
 outputs/**/*.pkl
 outputs/**/*.npy
+outputs/**/*.pt
+outputs/**/*.bin
+outputs/**/*.safetensors
+outputs/arabert_financial_adaptation/arabert_financial_mlm/
+
+# LaTeX build artifacts. Keep source .tex files and curated PDFs only.
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.out
+*.synctex.gz
+*.toc
+Bachelor_Thesis_Template/bachelor.ps
+
+# Unused template/demo figures from the original thesis scaffold
+Bachelor_Thesis_Template/images/deep_github_model.png
+Bachelor_Thesis_Template/images/deep_kaggle_model.png
+Bachelor_Thesis_Template/images/formula.png
+Bachelor_Thesis_Template/images/github_model*/
+Bachelor_Thesis_Template/images/github_model\ \(federated\).png
+Bachelor_Thesis_Template/images/kaggle_model*/
+Bachelor_Thesis_Template/images/kaggle_model\(federated\).png
 
 # Local credentials and environment files
 .env

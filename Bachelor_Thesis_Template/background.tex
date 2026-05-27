@@ -1,0 +1,68 @@
+\chapter{Background}
+\label{chap:background}
+
+\section{Financial Forecasting as a Problem of Limited Predictability}
+
+Stock forecasting sits at the intersection of economics, statistics, and machine learning. Its difficulty begins with the nature of the market itself. Financial prices respond to heterogeneous information, strategic trading, liquidity effects, and macroeconomic shocks. The efficient-market literature formalized this challenge by arguing that public information is rapidly incorporated into prices. Later empirical work showed that the random-walk view is too strict to hold universally, but it also confirmed that predictable structure in market data is weak, unstable, and difficult to exploit consistently. \cite{fama1970, lo1988randomwalk}
+
+This tension explains why forecasting remains an active research area. If markets were perfectly predictable, the problem would already be solved. If they were perfectly unpredictable, forecasting models would be pointless. In practice, the research problem lies between these extremes. Small predictive patterns may exist, but they are noisy, regime-dependent, and sensitive to how the prediction target is defined. Surveys of the field show that forecasting studies differ substantially in horizon, label construction, feature design, and evaluation protocol. Those choices often matter as much as the choice of learning algorithm itself. \cite{atsalakis2009survey, sezer2020dlreview}
+
+\section{Forecast Targets and Input Modalities}
+
+Financial forecasting studies use several related targets. Some predict the next price level. Others predict return magnitude, return sign, or discrete upward versus downward direction. Directional forecasting is attractive because it aligns naturally with decision-making, but it also discards part of the information contained in the return magnitude. Regression targets preserve more information, yet they are often harder to estimate accurately. For this reason, many studies evaluate both direction and return as complementary views of the same forecasting task. \cite{sezer2020dlreview, fischer2018lstm, nelson2017lstm}
+
+The corresponding input spaces also vary. Traditional models rely on historical prices, returns, volume, and hand-crafted technical indicators. These variables summarize past market behavior, but they do not describe the semantic content of new information. A news article about profits, financing, or governance may precede a price move even when the numerical history alone is ambiguous. This observation motivates the use of exogenous text signals in addition to market data. The broader forecasting literature increasingly treats stock prediction as a multimodal problem rather than a purely numerical one. \cite{atsalakis2009survey, sezer2020dlreview, fischer2018lstm}
+
+\section{Class Imbalance and Evaluation Sensitivity}
+
+Directional forecasting also creates a statistical issue that is easy to underestimate: class imbalance. Upward and downward moves are rarely distributed evenly across a financial sample. Persistent market drift, low-volatility periods, and sparse firm-level event coverage can all push the labels toward one class. In that setting, raw accuracy can overstate model quality because a classifier can appear successful while still failing on the minority class. For that reason, this thesis reports balanced accuracy, F1, and confusion-matrix statistics alongside headline accuracy, in line with the broader evaluation caution emphasized in recent forecasting studies. \cite{sezer2020dlreview, liapis2023deep, shi2021deeplearning}
+
+The problem becomes sharper in sentiment-based firm-level studies. News coverage is uneven across firms, and longer forecast horizons can create clusters of same-direction labels. A model may then learn the dominant class more easily than it learns a robust relation between sentiment and future movement. Table~\ref{tab:imbalance_background} summarizes why imbalance matters and which safeguards are needed before a result can be interpreted as economically meaningful.
+
+\begin{table}[ht]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{4.1cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{3.1cm}}
+\toprule
+Imbalance source & Financial forecasting manifestation & Risk if ignored & Appropriate safeguard \\
+\midrule
+Market drift & One direction dominates over a sample period, especially in short binary up/down labels & Raw accuracy overstates true discrimination & Balanced accuracy and confusion-matrix reporting \\
+Sparse firm coverage & Company panels with few relevant articles generate unstable minority-class observations & High F1 can be driven by majority-class prediction & Per-ticker evaluation and coverage analysis \\
+Longer target horizons & Multi-day returns can cluster on one side during sustained moves & Thresholds become biased toward the dominant class & Validation-only threshold tuning and horizon-specific reporting \\
+Event concentration & Market-moving news arrives in bursts rather than uniformly across dates & A model can memorize event periods instead of learning a stable relation & Chronological splits with embargo and walk-forward validation \\
+\bottomrule
+\end{tabular}
+\caption{Why class imbalance is a methodological concern in directional financial forecasting.}
+\label{tab:imbalance_background}
+\end{table}
+
+\section{Textual Information and Sentiment in Finance}
+
+The finance literature has long treated text as an information-bearing object rather than as unstructured noise. Early work examined whether media tone, message-board language, or corporate disclosures could explain subsequent market behavior. Negative media language was shown to correlate with market activity and price pressure. Message-board sentiment was also found to contain information about volume and volatility, although the signal quality depended on aggregation and filtering. Finance-specific dictionaries later showed that general-purpose sentiment lexicons can misclassify domain vocabulary, which is why terms such as ``liability'' or ``capital'' require financial context to be interpreted correctly. \cite{tetlock2007media, das2007yahoo, loughran2011liability, kearney2014survey}
+
+These findings motivate a distinction between sentiment source and sentiment quality. Not every text stream has the same predictive value. Financial news is usually more structured than social-media text and is more likely to contain firm-linked events. Social media is timelier and larger in volume, but it is also noisier and harder to map to a specific asset. Survey work in financial sentiment analysis therefore emphasizes that source choice, content analysis method, and aggregation strategy jointly determine whether textual sentiment becomes a useful explanatory variable. \cite{kearney2014survey, nguyen2015social, bollen2011twitter}
+
+\section{From Lexicons to Deep Financial NLP}
+
+Text-based market prediction has evolved from sparse lexical features toward distributed and contextual representations. Early financial news systems used bag-of-words, noun phrases, named entities, and support-vector models. Schumaker and Chen's AZFinText system used breaking financial news and intra-day stock data to predict short-term price movement, showing that structured textual features can support directional prediction. Hagenau, Liebmann, and Neumann later introduced context-capturing features and reported improvements over simpler textual baselines for stock-price prediction from financial news. These systems demonstrated that the representation of text strongly influences the usefulness of the downstream forecasting model. \cite{schumaker2009azfin, hagenau2013automated}
+
+Deep learning extended this line of work by learning latent semantic features directly from text. Event-driven approaches represented news events in dense form and modeled how short-term and long-term event effects influence price movement. Other models fused news with recurrent architectures, attention mechanisms, or hybrid text-price representations. These studies moved the field from manually designed textual cues toward learned semantic encodings. They also made clear that the meaning of a financial article cannot be reduced to isolated polarity words alone. \cite{ding2015event, hu2018chaotic, mohan2019news, xu2018stock}
+
+The broader NLP shift toward transformer-based models is also central to this thesis. The transformer architecture replaced recurrent sequence processing with self-attention, enabling stronger contextual representations at scale. BERT then showed how pre-trained bidirectional language models could be adapted to downstream tasks with minimal architectural change. Domain-specialized variants followed, including FinBERT for English financial text. This progression matters because sentiment extraction quality increasingly depends on pre-training domain and language rather than on task-specific feature engineering alone. \cite{vaswani2017attention, devlin2019bert, araci2019finbert}
+
+\section{Arabic and Bilingual Financial Text Processing}
+
+Arabic financial NLP introduces additional complexity. Arabic is morphologically rich, orthographically variable, and distributed across Modern Standard Arabic, dialectal Arabic, and specialized domain language. These properties make direct transfer from English sentiment models unreliable. Arabic-specific pre-training has therefore become important for downstream classification quality. AraBERT demonstrated strong gains over multilingual baselines on Arabic NLP tasks, while ARBERT and MARBERT showed that specialized Arabic pre-training can outperform larger multilingual models on a broad benchmark of Arabic understanding tasks. \cite{antoun2020arabert, abdulmageed2021arbert}
+
+Bilingual settings introduce a further modeling decision: whether to force all text through a single multilingual model or to route each language through a more suitable encoder. Recent Arabic model studies indicate that language variant and task proximity can be more important than raw pre-training size. CAMeLBERT provides additional evidence that Arabic model specialization benefits downstream performance when the pre-training data better matches the target task. For a bilingual financial-news pipeline, these findings justify treating language routing as a methodological design choice rather than a preprocessing detail. \cite{inoue2021camelbert, abdulmageed2021arbert, antoun2020arabert}
+
+\section{Chronological Evaluation and Leakage}
+
+The final background concept is evaluation discipline. Time-series forecasting is unusually vulnerable to leakage because future information can enter the feature space in subtle ways. The leakage may come from same-day article alignment, overlapping target windows, hyperparameter tuning on test periods, or refitting logic that uses observations whose targets would not yet be known at prediction time. Reported performance can therefore be overstated even when the implementation looks reasonable on the surface. \cite{liapis2023deep, dahal2023comparative}
+
+This concern is especially relevant for text-based forecasting. News has timestamps, trading occurs on exchange calendars, and forecast horizons span multiple future observations. A method that ignores those interactions can produce optimistic but invalid results. Chronological train-validation-test splits, embargo regions between adjacent blocks, and walk-forward evaluation are therefore not optional refinements. They are part of the problem definition itself. This thesis adopts that view and treats leakage control as a core experimental requirement rather than as a final diagnostic step. \cite{liapis2023deep, sezer2020dlreview}
+
+\section{Chapter Summary}
+
+This chapter established the conceptual foundations for the thesis. Stock forecasting is difficult because market predictability is limited and unstable. Textual information is attractive because it describes events that numerical histories do not represent directly. The usefulness of that information depends on representation quality, label balance, language suitability, and evaluation discipline. These background concepts motivate the more specific state-of-the-art review in the next chapter, which examines how prior work operationalized these ideas and where the present thesis contributes.

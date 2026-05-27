@@ -1,0 +1,11 @@
+{
+  "articles_path": "outputs/arabert_financial_adaptation/arabic_financial_adaptation_articles.csv",
+  "adapted_model_dir": "outputs/arabert_financial_adaptation/arabert_financial_mlm",
+  "base_model": "aubmindlab/bert-base-arabertv02",
+  "output_dir": "outputs/arabert_financial_adaptation",
+  "max_length": 256,
+  "mlm_probability": 0.15,
+  "batch_size": 4,
+  "max_batches": 0,
+  "seed": 123
+}

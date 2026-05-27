@@ -1,0 +1,35 @@
+{
+  "args": {
+    "output_dir": "outputs/social_media_feasibility",
+    "queries": [
+      "EGX",
+      "EGX30",
+      "\u0627\u0644\u0628\u0648\u0631\u0635\u0629 \u0627\u0644\u0645\u0635\u0631\u064a\u0629",
+      "\u0627\u0644\u0628\u0648\u0631\u0635\u0647 \u0627\u0644\u0645\u0635\u0631\u064a\u0647",
+      "\u0627\u0644\u0628\u0648\u0631\u0635\u0629",
+      "CIB",
+      "COMI",
+      "\u0627\u0644\u0628\u0646\u0643 \u0627\u0644\u062a\u062c\u0627\u0631\u064a \u0627\u0644\u062f\u0648\u0644\u064a",
+      "TMG",
+      "TMGH",
+      "\u0637\u0644\u0639\u062a \u0645\u0635\u0637\u0641\u0649",
+      "OIH",
+      "\u0627\u0648\u0631\u0627\u0633\u0643\u0648\u0645 \u0644\u0644\u0627\u0633\u062a\u062b\u0645\u0627\u0631"
+    ],
+    "subreddits": [
+      "PersonalFinanceEgypt",
+      "Egypt",
+      "EgyptianStockMarket",
+      "investing",
+      "stocks"
+    ],
+    "limit_per_query": 25,
+    "run_reddit": false
+  },
+  "reddit_result": {
+    "status": "SKIPPED",
+    "reason": "Reddit collection was not requested. Use --run-reddit only after obtaining approved official API credentials.",
+    "records": 0
+  },
+  "ethical_rule": "No unofficial scraping, no paid API bypasses, no redistribution of raw social-media data."
+}

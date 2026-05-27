@@ -1,0 +1,42 @@
+{
+  "direction_repo_path": "/tmp/EGX-Direction-Forecasting-experiment",
+  "data_dir": "data",
+  "daily_sentiment_path": "outputs/final_sentiment_experiments/features/h5_all_news_bilingual_daily_features.csv",
+  "output_dir": "outputs/historical_sentiment_feature_experiment",
+  "tickers": [
+    "CIB",
+    "TMG",
+    "OIH"
+  ],
+  "models": [
+    "logistic",
+    "xgboost",
+    "mlp"
+  ],
+  "nn_epochs": 50,
+  "past_window": 10,
+  "future_window": 5,
+  "test_size": 0.2,
+  "gap": null,
+  "direction_repo_metadata": {
+    "repo_path": "/tmp/EGX-Direction-Forecasting-experiment",
+    "remote_origin": "https://github.com/anastamerr/EGX-Direction-Forecasting.git",
+    "commit": "4a3652bda8cfd5e05809fe7c38345964c93e688c",
+    "branch": "main",
+    "status_short": ""
+  },
+  "sentiment_base_columns": [
+    "combined_article_count",
+    "combined_scored_count",
+    "combined_sentiment_weighted_mean",
+    "combined_sentiment_weighted_volume",
+    "combined_sentiment_polarity_share",
+    "combined_confidence_mean",
+    "combined_relevance_weight_mean",
+    "en_sentiment_weighted_mean",
+    "ar_sentiment_weighted_mean",
+    "en_ar_sentiment_spread",
+    "en_share_of_articles",
+    "ar_share_of_articles"
+  ]
+}

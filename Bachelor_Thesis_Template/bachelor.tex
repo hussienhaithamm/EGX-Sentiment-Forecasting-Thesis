@@ -1,0 +1,112 @@
+\documentclass[12pt, a4paper]{book}%, oneside
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{setspace}
+
+% \usepackage{fancyhdr}
+% \setlength{\headheight}{20pt} 
+% \usepackage{graphics}
+
+\usepackage[hyphens]{url}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\floatstyle{plaintop}
+\restylefloat{table}
+\usepackage{subfig}
+\usepackage{array}
+% \usepackage{xtab}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{appendix}
+\usepackage[pdfborder={0 0 0}, colorlinks=true, linkcolor=black, citecolor=blue]{hyperref}
+\usepackage[printonlyused]{acronym}
+\usepackage{ifpdf}
+\graphicspath{{./images/}}
+% \setlength{\parindent}{0pt}
+\newcommand{\submissionDay}{31}
+\newcommand{\submissionMonth}{March}
+\newcommand{\submissionYear}{2026}
+\newcommand{\submissionDate}{\submissionDay~\submissionMonth~\submissionYear}
+\newcommand{\typeOfThesis}{Bachelor Thesis}
+
+\newcommand{\titleOfThesisOne}{Sentiment-Enhanced Deep Stock Market Forecasting Using Bilingual Financial News: An Egyptian Market Case Study}
+
+\newcommand{\authorOfThesis}{Hussien Haitham Hussien Abdelmotaleb Hussien}
+\newcommand{\supervisorOne}{Dr. Mervat AbuElkheir}
+
+\newcommand{\includefig}[4]{
+    \begin{figure}[ht]
+     \centering
+      \includegraphics[width=#1\textwidth]{images/#2}
+      \caption{#3}
+      \label{#4}
+    \end{figure}
+}
+
+\newcommand{\includefigWSC}[5]{
+    \begin{figure}[ht]
+     \centering
+      \includegraphics[width=#1\textwidth]{images/#2}
+      \caption[#3]{#4}
+      \label{#5}
+    \end{figure}
+}
+
+\newcommand{\includeeps}[4]{
+\includefig{#1}{#2.eps}{#3}{#4}
+}
+
+\newcommand{\includeepsWSC}[5]{
+\includefigWSC{#1}{#2.eps}{#3}{#4}{#5}
+}
+
+
+\ifpdf
+\pdfinfo {
+	/Author (\authorOfThesis)
+	/Title (\titleOfThesisOne)
+	/Subject (\typeOfThesis)
+	/Keywords ()
+	/CreationDate (D:20090707085533)
+}
+\fi
+
+\begin{document}
+% \overfullrule=5pt
+\pagestyle{plain}
+\pagenumbering{Roman}
+
+\include{GUC_TitlePage}
+
+\include{acknowledgments}
+
+\include{abstract}
+\tableofcontents
+% \addcontentsline{toc}{chapter}{Contents}
+\clearpage 
+
+\pagestyle{headings}
+\pagenumbering{arabic}
+
+% \setlength\parskip{15pt}
+\setlength\parskip{.5\baselineskip plus .2\baselineskip
+	minus .4\baselineskip}
+% \setlength\parskip{.5\baselineskip \@plus .1\baselineskip \@minus ..1\baselineskip}
+
+
+\include{introduction}
+\include{background}
+\include{literature_review}
+
+% add more chapters here
+\include{methodology}
+\include{results}
+\include{conclusion}
+\include{appendix}
+
+\bibliographystyle{ieeetr}
+\bibliography{references}
+\addcontentsline{toc}{chapter}{References}
+
+\end{document}

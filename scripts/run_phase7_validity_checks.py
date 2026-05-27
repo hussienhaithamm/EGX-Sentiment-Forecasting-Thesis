@@ -495,6 +495,18 @@ def _format_float(value: object, digits: int = 3) -> str:
 
 
 def write_coverage_markdown(coverage: pd.DataFrame, path: Path) -> None:
+    more_available = coverage[coverage["more_mubasher_pages_available"] == True].copy()
+    if more_available.empty:
+        scrape_interpretation = (
+            "- The local scrape reaches the current live Mubasher listing-page counts for all ticker/language pairs checked, "
+            "so simply increasing `max_pages_per_language` is not expected to add more historical Mubasher pages from this source."
+        )
+    else:
+        tickers = ", ".join(more_available["ticker"].astype(str).tolist())
+        scrape_interpretation = (
+            f"- Live page-count checks indicate that additional Mubasher listing pages may be available for: {tickers}. "
+            "The resumable scraper should be run before treating source coverage as complete."
+        )
     lines = [
         "# Coverage Analysis",
         "",
@@ -529,7 +541,7 @@ def write_coverage_markdown(coverage: pd.DataFrame, path: Path) -> None:
             "## Interpretation",
             "",
             "- OIH and TMG remain sparse relative to their trading calendars; OIH has the lowest labeled article count and a shorter article history.",
-            "- The local scrape reaches the current live Mubasher listing-page counts for all ticker/language pairs checked, so simply increasing `max_pages_per_language` is not expected to add more historical Mubasher pages from this source.",
+            scrape_interpretation,
             "- Two OIH article-page failures are recorded in the scraper manifest. That is too small to explain weak model performance, but it is documented as residual source incompleteness.",
         ]
     )
