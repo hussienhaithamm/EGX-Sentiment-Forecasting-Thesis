@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 from pathlib import Path
 from typing import Dict, List, Sequence
@@ -157,6 +158,8 @@ def _run_mlm_training(arabic: pd.DataFrame, args: argparse.Namespace, output_dir
 
     torch.manual_seed(42)
     np.random.seed(42)
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    torch.use_deterministic_algorithms(True, warn_only=True)
     split_idx = int(len(arabic) * 0.8)
     train_texts = arabic.iloc[:split_idx]["adaptation_text"].tolist()
     val_texts = arabic.iloc[split_idx:]["adaptation_text"].tolist()

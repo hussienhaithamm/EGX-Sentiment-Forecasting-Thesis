@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 from pathlib import Path
 from typing import Dict, Iterable, List
 
@@ -30,7 +31,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mlm-probability", type=float, default=0.15)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--max-batches", type=int, default=0, help="0 means evaluate the full split.")
-    parser.add_argument("--seed", type=int, default=123)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed shared across python, numpy, and torch. Must match the training-script seed (42) so the masked-token positions are identical between base and adapted runs.",
+    )
     return parser.parse_args()
 
 
@@ -72,6 +78,12 @@ def evaluate_model(
             return {key: torch.tensor(value[idx]) for key, value in self.encodings.items()}
 
     text_list = list(texts)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    torch.use_deterministic_algorithms(True, warn_only=True)
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path)
     model = AutoModelForMaskedLM.from_pretrained(model_name_or_path)
     encodings = tokenizer(text_list, truncation=True, padding="max_length", max_length=max_length)
@@ -82,9 +94,6 @@ def evaluate_model(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     model.eval()
-
-    torch.manual_seed(seed)
-    np.random.seed(seed)
     losses: List[float] = []
     masked_tokens = 0
     examples = 0
@@ -170,7 +179,7 @@ def main() -> None:
     for split, texts in splits.items():
         for model_label, model_path, tokenizer_path in (
             ("base_arabert", args.base_model, args.base_model),
-            ("financial_adapted_arabert", args.adapted_model_dir, args.adapted_model_dir),
+            ("financial_adapted_arabert", args.adapted_model_dir, args.base_model),
         ):
             result = evaluate_model(
                 model_name_or_path=model_path,

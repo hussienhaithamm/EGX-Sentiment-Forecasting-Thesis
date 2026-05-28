@@ -11,18 +11,18 @@ This is not supervised sentiment accuracy. The checkpoint has no sentiment-class
 - MLM probability: `0.15`
 - Max sequence length: `256`
 - Batch size: `4`
-- Seed: `123`
+- Seed: `42`
 
 ## Results
 
 | Split | Model | Examples | Masked tokens | Loss | Perplexity |
 | --- | --- | ---: | ---: | ---: | ---: |
-| train | base_arabert | 1061 | 40372 | 0.9413 | 2.563 |
-| train | financial_adapted_arabert | 1061 | 40372 | 0.8202 | 2.271 |
-| validation | base_arabert | 266 | 10292 | 0.9624 | 2.618 |
-| validation | financial_adapted_arabert | 266 | 10292 | 0.8468 | 2.332 |
+| train | base_arabert | 1061 | 40403 | 0.9131 | 2.492 |
+| train | financial_adapted_arabert | 1061 | 40403 | 0.7882 | 2.199 |
+| validation | base_arabert | 266 | 10080 | 0.9414 | 2.564 |
+| validation | financial_adapted_arabert | 266 | 10080 | 0.8238 | 2.279 |
 
 ## Interpretation
 
-The adapted checkpoint lowers validation MLM loss by 0.1156 relative to the base AraBERT model, a relative reduction of 12.01%.
+The adapted checkpoint lowers validation MLM loss by 0.1175 relative to the base AraBERT model, a relative reduction of 12.49%.
 This result can support a domain-adaptation feasibility claim only. It does not prove better stock forecasting or better sentiment classification.

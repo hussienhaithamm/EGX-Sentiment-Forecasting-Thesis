@@ -7,5 +7,5 @@
   "mlm_probability": 0.15,
   "batch_size": 4,
   "max_batches": 0,
-  "seed": 123
+  "seed": 42
 }
