@@ -162,6 +162,12 @@ TARGET_COMPANIES: Dict[str, TargetCompany] = {
         ),
         secondary_aliases=(
             "OIH Holding",
+            # Note: OIH was formerly OTMT (Orascom Telecom Media & Technology,
+            # 2010-2018). OTMT aliases are intentionally excluded because nearly
+            # all OTMT-era articles predate the business-model pivot to
+            # diversified investment, and post-2018 OTMT mentions in the
+            # Mubasher feed are predominantly Telecom Egypt stories — a
+            # completely different company.
         ),
     ),
     "ORASCOM": TargetCompany(
