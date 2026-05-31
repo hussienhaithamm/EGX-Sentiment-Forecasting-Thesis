@@ -172,7 +172,7 @@ The thesis passes the broad scientific structure and now also passes the strict 
 | --- | --- | --- |
 | Original work declaration | Pass | Retained on `GUC_TitlePage.tex`. |
 | AI assistance declaration | Pass | Exact specified paragraph added under the certification list. |
-| Submission date | Pass (with TODO) | Set to `15 June 2026` with explicit LaTeX TODO comment for supervisor confirmation. |
+| Submission date | Pass | Confirmed `8 June 2026`; TODO comment removed from `bachelor.tex`. |
 
 ## Verification Pass
 
@@ -206,6 +206,6 @@ The thesis passes the broad scientific structure and now also passes the strict 
 | PDF recompile | 55 pages, 615,688 bytes, zero errors. |
 | Unit tests | 6 of 6 pass. |
 
-## Outstanding Residual TODOs (Intentional)
+## Outstanding Residual TODOs
 
-1. `bachelor.tex` line 27-29: confirm final submission date with supervisor before binding.
+None. All TODOs resolved.
