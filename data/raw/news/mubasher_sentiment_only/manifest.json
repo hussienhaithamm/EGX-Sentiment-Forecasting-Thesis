@@ -11,13 +11,13 @@
     "request_timeout_seconds": 20.0,
     "stop_after_seen_pages": 1
   },
-  "failed_articles_current_run": 2,
+  "failed_articles_current_run": 0,
   "failed_articles_path": "data/raw/news/mubasher_sentiment_only/failed_articles.jsonl",
   "failed_articles_total": 2,
   "failed_pages_current_run": 0,
   "failed_pages_path": "data/raw/news/mubasher_sentiment_only/failed_pages.jsonl",
   "failed_pages_total": 0,
-  "generated_at": "2026-04-26T18:21:08.558361+00:00",
+  "generated_at": "2026-05-28T09:01:04.720600+00:00",
   "languages": [
     "en",
     "ar"
@@ -26,24 +26,24 @@
   "summary": {
     "CIB": {
       "language_counts": {
-        "ar": 739,
-        "en": 317
+        "ar": 746,
+        "en": 318
       },
-      "total_records": 1056
+      "total_records": 1064
     },
     "OIH": {
       "language_counts": {
-        "ar": 472,
+        "ar": 474,
         "en": 225
       },
-      "total_records": 697
+      "total_records": 699
     },
     "TMG": {
       "language_counts": {
-        "ar": 418,
-        "en": 191
+        "ar": 424,
+        "en": 192
       },
-      "total_records": 609
+      "total_records": 616
     }
   },
   "tickers": [

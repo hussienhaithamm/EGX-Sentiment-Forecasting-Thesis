@@ -64,3 +64,10 @@ Bachelor_Thesis_Template/images/kaggle_model\(federated\).png
 *.pem
 *.key
 *.token
+
+# Python packaging artifacts
+*.egg-info/
+*.egg-info
+
+# Intermediate pipeline JSONL files (large byproducts of the rebuild script)
+data/processed/news/sentiment_ready/*.jsonl

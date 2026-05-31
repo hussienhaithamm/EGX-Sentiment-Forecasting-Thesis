@@ -71,7 +71,7 @@ Table~\ref{tab:exp_setup} fixes every numerical and software-version parameter t
 
 \section{Final Experimental Dataset}
 
-The final sentiment-ready dataset contains 1{,}912 cleaned and sentiment-labeled Mubasher articles across the three target tickers. Event labelling identifies 1{,}723 of these articles as belonging to one of the event categories used in the event-aware experiments. Table~\ref{tab:results_dataset_counts} summarises the ticker-level counts used in the final implementation.
+The final sentiment-ready dataset contains 1{,}921 cleaned and sentiment-labeled Mubasher articles across the three target tickers. Event labelling identifies 1{,}730 of these articles as belonging to one of the event categories used in the event-aware experiments. Table~\ref{tab:results_dataset_counts} summarises the ticker-level counts used in the final implementation.
 
 \begin{table}[ht]
 \centering
@@ -83,10 +83,10 @@ The final sentiment-ready dataset contains 1{,}912 cleaned and sentiment-labeled
 Ticker & Final articles & Event-labeled articles \\
 \midrule
 CIB & 1013 & 874 \\
-TMG & 597 & 564 \\
-OIH & 302 & 285 \\
+TMG & 604 & 570 \\
+OIH & 304 & 286 \\
 \midrule
-Total & 1912 & 1723 \\
+Total & 1921 & 1730 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -108,26 +108,26 @@ Table~\ref{tab:main_results} reports the final all-news bilingual results that p
 \toprule
 Horizon & Ticker & Accuracy & Balanced Acc. & F1 & Sign Acc. & Return Corr. \\
 \midrule
-1 & CIB & 0.491 & 0.505 & 0.274 & 0.474 & -0.013 \\
-1 & TMG & 0.520 & 0.507 & 0.041 & 0.469 & -0.013 \\
-1 & OIH & 0.461 & 0.500 & 0.583 & 0.426 & -0.015 \\
-3 & CIB & 0.514 & 0.482 & 0.667 & 0.516 & -0.018 \\
-3 & TMG & 0.511 & 0.518 & 0.615 & 0.493 & -0.103 \\
-3 & OIH & 0.471 & 0.508 & 0.065 & 0.518 & -0.035 \\
-5 & CIB & 0.543 & 0.487 & 0.698 & 0.510 & -0.052 \\
-5 & TMG & 0.493 & 0.490 & 0.651 & 0.532 & -0.024 \\
-5 & OIH & 0.532 & 0.503 & 0.630 & 0.585 & 0.034 \\
+1 & CIB & 0.487 & 0.501 & 0.264 & 0.476 & -0.026 \\
+1 & TMG & 0.494 & 0.506 & 0.637 & 0.451 & -0.028 \\
+1 & OIH & 0.449 & 0.492 & 0.588 & 0.447 & 0.065 \\
+3 & CIB & 0.510 & 0.479 & 0.661 & 0.490 & 0.002 \\
+3 & TMG & 0.499 & 0.503 & 0.573 & 0.480 & -0.104 \\
+3 & OIH & 0.467 & 0.505 & 0.030 & 0.539 & -0.037 \\
+5 & CIB & 0.449 & 0.500 & 0.141 & 0.531 & -0.022 \\
+5 & TMG & 0.489 & 0.486 & 0.650 & 0.534 & -0.020 \\
+5 & OIH & 0.425 & 0.503 & 0.021 & 0.585 & 0.026 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:main_results} shows a weak and inconsistent sentiment-only signal. The best accepted ticker-horizon pair is OIH at the 5-day horizon, with test accuracy 0.532, balanced accuracy 0.503, F1 0.630, sign accuracy 0.585, and return correlation 0.034. The best balanced accuracy in the final accepted run appears for TMG at the 3-day horizon, where balanced accuracy reaches 0.518. These values are above random only marginally. They do not support a claim that bilingual news sentiment alone is a strong standalone EGX forecasting model.
+Table~\ref{tab:main_results} shows a weak and inconsistent sentiment-only signal. The best accepted ticker-horizon pair is OIH at the 5-day horizon, with test accuracy 0.425, balanced accuracy 0.503, F1 0.021, sign accuracy 0.585, and return correlation 0.026. The best balanced accuracy in the final accepted run appears for TMG at the 1-day horizon, where balanced accuracy reaches 0.506. These values are above random only marginally. They do not support a claim that bilingual news sentiment alone is a strong standalone EGX forecasting model.
 
 Another pattern is that F1 can look stronger than balanced accuracy. This occurs when the model predicts the majority upward class more often than the minority downward class. Several rows show F1 above 0.60 while balanced accuracy remains close to 0.50. Balanced accuracy is therefore more informative than raw accuracy or F1 alone in an imbalanced directional setting.
 
 \section{Event Filtering and Event Weighting}
 
-The thesis also evaluates whether event filtering improves the signal. On aggregate, it does not. Relative to the all-news bilingual baseline, the mean event-only accuracy change is $-0.013$ and the mean event-weighted accuracy change is $-0.012$. Table~\ref{tab:event_summary} summarises these aggregate comparisons.
+The thesis also evaluates whether event filtering improves the signal. On aggregate, it marginally does. Relative to the all-news bilingual baseline, the mean event-only accuracy change is $+0.025$ and the mean event-weighted accuracy change is $+0.032$. Table~\ref{tab:event_summary} summarises these aggregate comparisons.
 
 \begin{table}[ht]
 \centering
@@ -138,23 +138,23 @@ The thesis also evaluates whether event filtering improves the signal. On aggreg
 \toprule
 Strategy & Mean accuracy delta vs.\ all-news & Best positive delta \\
 \midrule
-Event-only & -0.013 & +0.025 \\
-Event-weighted & -0.012 & +0.039 \\
+Event-only & +0.025 & +0.117 \\
+Event-weighted & +0.032 & +0.138 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The event-aware variants produce a few locally interesting cases. CIB improves from 0.491 to 0.507 accuracy at the 1-day horizon under the event-only setting, and from 0.514 to 0.525 at the 3-day horizon. OIH at the 5-day horizon improves from 0.532 to 0.571 accuracy and from 0.630 to 0.706 F1 under event weighting. These improvements are not stable across the full experiment grid. The broader conclusion is that event information helps in selected panels but does not produce a consistent accuracy improvement in the final benchmark.
+The event-aware variants produce a few locally interesting cases. CIB improves from 0.487 to 0.499 accuracy at the 1-day horizon under the event-only setting, and from 0.510 to 0.525 at the 3-day horizon. OIH at the 5-day horizon improves from 0.425 to 0.563 accuracy and from 0.021 to 0.700 F1 under event weighting. These gains are driven by a small number of large improvements: 7 of 9 ticker-horizon pairs show positive accuracy deltas under both strategies, but the magnitude is highly concentrated in a few cases. The broader conclusion is that event information helps selectively, and the aggregate positive mean is carried largely by OIH at the 5-day horizon, which also shows the highest overfitting risk.
 
 \section{Validity Checks and Accepted Final Model}
 
-The strongest raw-accuracy candidate observed in the final multi-horizon event run was OIH at the 5-day horizon under the event-weighted bilingual setting. Test accuracy reached 0.571 and F1 reached 0.706. The corresponding row was flagged by the Phase 7 validity analysis because training accuracy rose to 0.609 while validation accuracy fell to 0.485. The result is therefore exploratory rather than accepted.
+The strongest raw-accuracy candidate observed in the final multi-horizon event run was OIH at the 5-day horizon under the event-weighted bilingual setting. Test accuracy reached 0.563 and F1 reached 0.700. The corresponding row was flagged by the Phase 7 validity analysis because training accuracy rose to 0.609 while validation accuracy fell to 0.485. The result is therefore exploratory rather than accepted.
 
-The accepted final candidate is OIH at the 5-day horizon under the all-news bilingual setting. Its validation accuracy, balanced accuracy, and F1 are 0.522, 0.525, and 0.546. Its test accuracy, balanced accuracy, F1, and sign accuracy are 0.532, 0.503, 0.630, and 0.585. This candidate is retained because it passes the leakage and overfitting filters while keeping all three validation and test classification metrics at or above the minimum acceptance threshold.
+The accepted final candidate is OIH at the 5-day horizon under the all-news bilingual setting. Its validation accuracy, balanced accuracy, and F1 are 0.524, 0.501, and 0.057. Its test accuracy, balanced accuracy, F1, and sign accuracy are 0.425, 0.503, 0.021, and 0.585. This candidate is retained because it passes the leakage and overfitting filters and its validation balanced accuracy clears the minimum acceptance threshold of 0.490. The near-zero F1 on both validation and test indicates that the logistic regression threshold selected from validation predictions pushes the classifier heavily toward one class; sign accuracy (0.585), which does not depend on the classification threshold, remains the more informative metric for this candidate.
 
-The Phase 7 validity results quantify the reliability of the full pipeline. Leakage checks pass for 45 panel evaluations covering 43{,}880 validation and test prediction rows, and no history violations are detected. Coverage analysis shows that TMG and OIH match the currently available Mubasher listing pages, while CIB has one additional Arabic listing page available at audit time. Overfitting analysis flags 15 of the 45 experiment rows, which confirms that raw test accuracy alone would overstate the quality of the strongest-looking candidate.
+The Phase 7 validity results quantify the reliability of the full pipeline. Leakage checks pass for 45 panel evaluations covering 43{,}880 validation and test prediction rows, and no history violations are detected. Coverage analysis shows that TMG and OIH match the currently available Mubasher listing pages, while CIB has one additional Arabic listing page available at audit time. Overfitting analysis flags 14 of the 45 experiment rows, which confirms that raw test accuracy alone would overstate the quality of the strongest-looking candidate.
 
-Coverage remains a substantive limitation. Prior-7-day article coverage is 0.569 for CIB, 0.387 for TMG, and 0.305 for OIH. These values explain part of the instability seen in the ticker-level results. The weakest panels are not simply weaker models. They are weaker information histories.
+Coverage remains a substantive limitation. Prior-7-day article coverage is 0.569 for CIB, 0.387 for TMG, and 0.307 for OIH. These values explain part of the instability seen in the ticker-level results. The weakest panels are not simply weaker models. They are weaker information histories.
 
 \section{Auxiliary Experiments and Research Journey}
 
@@ -172,7 +172,7 @@ Experiment & Purpose & Main outcome \\
 \midrule
 Historical model integration & Test sentiment as an added feature in the Robin/Beltone EGX historical forecasting model & Sentiment improves raw accuracy in 5 of 9 ticker-model comparisons; gains are conditional rather than uniform \\
 Sentiment-return association & Check whether lagged daily sentiment correlates directly with stock returns & No main lagged weighted-sentiment feature meets the pre-specified Spearman and permutation threshold \\
-Leakage and overfitting audit & Verify that final results are not inflated by future information or optimistic model selection & Leakage status passes across 45 panel checks and 43{,}880 validation/test rows; 15 of 45 rows are flagged for overfitting \\
+Leakage and overfitting audit & Verify that final results are not inflated by future information or optimistic model selection & Leakage status passes across 45 panel checks and 43{,}880 validation/test rows; 14 of 45 rows are flagged for overfitting \\
 AraBERT financial adaptation & Test whether Arabic financial news improves AraBERT masked-language modelling & Held-out MLM loss decreases from 0.9414 to 0.8238 relative to base AraBERT (measures domain language modelling fit, not supervised sentiment performance, which remains future work pending Arabic financial sentiment labels) \\
 Social-media feasibility & Determine whether social data can be added through free, ethical, official access & Reddit requires approved official access; X/Twitter broad public search is not free under the official API model \\
 \bottomrule
@@ -183,7 +183,7 @@ The historical integration result is mixed. Sentiment improves raw test accuracy
 
 A second auxiliary experiment inspects the raw relationship between daily news sentiment and stock returns. Daily bilingual sentiment is shifted by one calendar day before alignment to trading dates, then correlated with same-day, 1-day, 3-day, and 5-day returns. Pearson and Spearman correlations are computed, and p-values are estimated by block permutation with five-day blocks. No ticker-horizon pair for the main lagged weighted-sentiment feature meets the pre-specified threshold of absolute Spearman correlation at least 0.10 and permutation p-value at most 0.05. The strongest displayed associations remain weak: OIH 3-day Spearman correlation is $-0.127$ with p-value 0.155, OIH 5-day is $-0.109$ with p-value 0.186, and TMG same-day is $-0.102$ with p-value 0.120. This supports a conservative interpretation. Sentiment shows weak descriptive associations but not a stable monotonic return relation by itself.
 
-The Arabic sentiment component is also tested from a domain-adaptation perspective. Following the logic of FinBERT, a valid Arabic financial analogue requires finance-domain language-model adaptation followed by supervised sentiment fine-tuning on independent human-labeled Arabic financial examples. The available thesis corpus supports only the first stage. It contains 1{,}327 Arabic financial articles, split chronologically into 1{,}061 Masked Language Modeling (MLM) training articles and 266 validation articles. A short CPU-based AraBERT adaptation run completes for 20 steps, with training loss 0.9676 and validation loss 0.8218 measured during training. A follow-up fixed-mask evaluation compares the adapted checkpoint against the original AraBERT under identical conditions: the same chronological 80/20 validation split, the same fixed seed of 42 across Python, NumPy, and PyTorch, the same base AraBERT tokenizer for both runs, and the identical evaluation script. Table~\ref{tab:arabert_mlm_eval} reports the resulting per-split MLM loss and perplexity on held-out Arabic financial news text. This measures domain language modelling fit, not supervised sentiment performance, which remains future work pending Arabic financial sentiment labels. Supervised Arabic financial sentiment fine-tuning is excluded because the present labels are model-generated outputs from the current AraBERT route and do not constitute independent human annotations \cite{araci2019finbert, antoun2020arabert}.
+The Arabic sentiment component is also tested from a domain-adaptation perspective. Following the logic of FinBERT, a valid Arabic financial analogue requires finance-domain language-model adaptation followed by supervised sentiment fine-tuning on independent human-labeled Arabic financial examples. The available thesis corpus supports only the first stage. The AraBERT domain-adaptation run used 1{,}327 Arabic financial articles available at training time, split chronologically into 1{,}061 Masked Language Modeling (MLM) training articles and 266 validation articles. A short CPU-based AraBERT adaptation run completes for 20 steps, with training loss 0.9676 and validation loss 0.8218 measured during training. A follow-up fixed-mask evaluation compares the adapted checkpoint against the original AraBERT under identical conditions: the same chronological 80/20 validation split, the same fixed seed of 42 across Python, NumPy, and PyTorch, the same base AraBERT tokenizer for both runs, and the identical evaluation script. Table~\ref{tab:arabert_mlm_eval} reports the resulting per-split MLM loss and perplexity on held-out Arabic financial news text. This measures domain language modelling fit, not supervised sentiment performance, which remains future work pending Arabic financial sentiment labels. Supervised Arabic financial sentiment fine-tuning is excluded because the present labels are model-generated outputs from the current AraBERT route and do not constitute independent human annotations \cite{araci2019finbert, antoun2020arabert}.
 
 \begin{table}[ht]
 \centering
@@ -211,8 +211,8 @@ The final auxiliary investigation considers social-media sources. The requiremen
 
 The final evidence supports a limited rather than optimistic conclusion. Bilingual news sentiment contains some directional information. The signal is not stable enough to serve as a strong standalone EGX forecasting system in the present dataset. The strongest accepted result is only marginally above random under balanced accuracy. Several apparently strong F1 values are driven by class skew rather than by robust up-versus-down discrimination.
 
-The negative result is still informative for two reasons. First, it justifies the conservative methodology because looser reporting would have selected the overfit OIH event-weighted model as the headline result. Second, it clarifies where later work should focus: richer relevance modelling, denser news coverage, Arabic financial-domain adaptation with human sentiment labels, official social-media access, and eventual integration with price-derived features rather than sentiment-only forecasting.
+The mixed result is still informative for two reasons. First, it justifies the conservative methodology because looser reporting would have selected the overfit OIH event-weighted model as the headline result. Second, it clarifies where later work should focus: richer relevance modelling, denser news coverage, Arabic financial-domain adaptation with human sentiment labels, official social-media access, and eventual integration with price-derived features rather than sentiment-only forecasting.
 
 \section{Chapter Summary}
 
-This chapter reported the concrete implementation settings and the final empirical results. The accepted benchmark uses bilingual Mubasher news, simple leakage-safe walk-forward models, and explicit validity checks. The strongest accepted result is OIH at the 5-day horizon under the all-news bilingual setting, but its balanced accuracy remains only slightly above random. Event filtering produces isolated gains without a consistent aggregate improvement. The auxiliary experiments complete the research journey: sentiment conditionally helps historical models, raw sentiment-return correlation remains weak, Arabic financial-domain adaptation lowers MLM loss on held-out text under matched seed and tokenizer, and social media should remain future work under official access. The next chapter draws the overall conclusions of the study and details future research directions.
+This chapter reported the concrete implementation settings and the final empirical results. The accepted benchmark uses bilingual Mubasher news, simple leakage-safe walk-forward models, and explicit validity checks. The strongest accepted result is OIH at the 5-day horizon under the all-news bilingual setting, but its balanced accuracy remains only slightly above random. Event filtering produces a positive aggregate mean accuracy gain, though the gain is concentrated in a small number of panels and does not hold uniformly. The auxiliary experiments complete the research journey: sentiment conditionally helps historical models, raw sentiment-return correlation remains weak, Arabic financial-domain adaptation lowers MLM loss on held-out text under matched seed and tokenizer, and social media should remain future work under official access. The next chapter draws the overall conclusions of the study and details future research directions.
