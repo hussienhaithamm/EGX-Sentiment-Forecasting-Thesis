@@ -1,11 +1,11 @@
 \chapter{Results \& Implementation}
 \label{chap:results}
 
-This chapter reports the concrete implementation settings and the empirical results of the methodology defined in Chapter~\ref{chap:methodology}. The chapter begins with a complete experimental-setup table that fixes every reproducibility parameter, then characterises the final dataset, presents the main multi-horizon results, isolates the event-aware variants, summarises the leakage and overfitting validity checks, walks through the four auxiliary experiments, and closes with an analytical discussion that explains why each result behaves as it does.
+This chapter reports the implementation settings and the empirical results. It opens with a reproducibility table, then covers the final dataset, the main multi-horizon results, the event-filtering results, the validity checks, and the four auxiliary experiments. A discussion section at the end explains what the findings mean.
 
 \section{Experimental Setup}
 
-Table~\ref{tab:exp_setup} fixes the full reproducibility surface used to obtain every reported number. The values are pulled directly from the project \texttt{requirements.txt}, \texttt{pyproject.toml}, the AraBERT training script \texttt{scripts/run\_arabert\_financial\_adaptation\_experiment.py}, the AraBERT evaluation script \texttt{scripts/evaluate\_arabert\_financial\_adaptation.py}, and the saved \texttt{run\_metadata.json} files under \texttt{outputs/}. Any value that is not exactly fixed in the released configuration is flagged as a TODO so that future readers can identify residual reproducibility gaps.
+Table~\ref{tab:exp_setup} records every parameter needed to reproduce any number reported in this chapter. The values are drawn directly from the project \texttt{requirements.txt}, \texttt{pyproject.toml}, the AraBERT training script, the AraBERT evaluation script, and the saved \texttt{run\_metadata.json} files under \texttt{outputs/}.
 
 {\small
 \renewcommand{\arraystretch}{1.15}
@@ -215,4 +215,4 @@ The mixed result is still informative for two reasons. First, it justifies the c
 
 \section{Chapter Summary}
 
-This chapter reported the concrete implementation settings and the final empirical results. The accepted benchmark uses bilingual Mubasher news, simple leakage-safe walk-forward models, and explicit validity checks. The strongest accepted result is OIH at the 5-day horizon under the all-news bilingual setting, but its balanced accuracy remains only slightly above random. Event filtering produces a positive aggregate mean accuracy gain, though the gain is concentrated in a small number of panels and does not hold uniformly. The auxiliary experiments complete the research journey: sentiment conditionally helps historical models, raw sentiment-return correlation remains weak, Arabic financial-domain adaptation lowers MLM loss on held-out text under matched seed and tokenizer, and social media should remain future work under official access. The next chapter draws the overall conclusions of the study and details future research directions.
+This chapter reported the implementation settings and the empirical results. The benchmark uses bilingual Mubasher news, simple walk-forward models with leakage controls, and explicit validity checks. The best accepted result is OIH at the 5-day horizon, but its balanced accuracy stays only slightly above random. Event filtering shows a small positive average gain, though it is concentrated in a few panels. The auxiliary experiments round out the picture: sentiment helps historical models in some cases, the raw sentiment-return correlation is weak, AraBERT domain adaptation lowers held-out MLM loss, and social media remains out of scope without official access. The next chapter draws the overall conclusions and points to future directions.

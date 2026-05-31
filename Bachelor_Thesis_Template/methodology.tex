@@ -1,7 +1,7 @@
 \chapter{Methodology}
 \label{chap:methodology}
 
-This chapter presents the solution approach adopted in the thesis. It opens with the high-level research design and pipeline, then steps through the study universe and data sources, news collection and article preparation, bilingual sentiment extraction, formal definitions of confidence filtering and daily aggregation, event-aware variants, target construction and lagged alignment, the forecasting framework, evaluation metrics, leakage control, and the four auxiliary experiment protocols. Numbered formulas are introduced wherever they govern reproducible behaviour in the pipeline and are referenced by number in the prose that follows.
+This chapter explains how the thesis is designed and what was built. It starts with the overall research design and the pipeline, then covers the data sources, article preparation, bilingual sentiment scoring, the formal confidence filter and daily aggregation rules, event-aware variants, target construction, the forecasting setup, evaluation metrics, leakage control, and the four auxiliary experiments. Numbered equations are used wherever the pipeline behaviour needs to be pinned down precisely, and each one is referenced in the text around it.
 
 \section{Research Design}
 
@@ -49,7 +49,7 @@ The same distribution is visualised in Figure~\ref{fig:dataset_language_distribu
 
 The news pipeline begins by scraping Mubasher listing pages separately for Arabic and English. For each ticker-language pair, the crawler collects article identifiers, URLs, titles, summaries, and article bodies. The crawler is incremental and retry-aware so that interrupted collection can be resumed without restarting the archive.
 
-Collected articles pass through a preparation stage that standardises company references and removes low-quality or duplicated records. The preparation stage resolves ticker aliases to a canonical identity, normalises timestamps to Cairo local time, cleans Arabic and English text, removes very short or duplicated records, and filters weak entity matches. The result is a sentiment-ready bilingual article table whose rows correspond to distinct company-linked news items.
+Collected articles pass through a preparation stage that standardises company references and removes low-quality or duplicated records. The preparation stage maps all company name variants to a single reference identity, normalises timestamps to Cairo local time, cleans Arabic and English text, removes very short or duplicated records, and filters weak entity matches. The result is a sentiment-ready bilingual article table whose rows correspond to distinct company-linked news items.
 
 Article relevance is then represented explicitly rather than assumed. A direct article contains the company alias in the title. A contextual article contains the alias in the body but not in the title. An indirect article is linked through weaker alias evidence. A stock-page-only article appears on the company page without stronger textual support. These categories are converted into weights so that strong company references contribute more than weak ones when daily sentiment features are aggregated.
 
@@ -59,7 +59,7 @@ After article preparation, sentiment is scored using separate models for English
 
 For each article, the sentiment layer stores the detected language, the model route, the predicted label, the class probabilities, a model-confidence estimate, and a continuous sentiment score. The article-level sentiment contribution is then weighted by both ticker-match confidence and model confidence. This design downweights weak ticker matches and low-confidence predictions before any daily aggregation takes place.
 
-The use of off-the-shelf transformer models is a pragmatic research choice rather than a claim that these models are optimal for Egyptian financial language. The thesis objective is a test of whether a language-aware bilingual sentiment signal exists at all under a conservative benchmark. If such a signal exists, later work can fine-tune these models on financial-domain Arabic and English corpora.
+Using off-the-shelf transformer models is a practical choice, not a claim that they are the best fit for Egyptian financial language. The goal is to find out whether a bilingual sentiment signal exists at all under a tight benchmark. If it does, later work can fine-tune these models on Arabic and English financial corpora.
 
 \section{Confidence Filtering and Daily Sentiment Aggregation}
 
@@ -153,11 +153,11 @@ Balanced accuracy is treated as a primary metric rather than as an auxiliary one
 
 Leakage is a common failure mode in financial forecasting, so the final pipeline includes explicit validity checks beyond the main experiment loop. These checks verify that the historical rows used for any validation or test prediction do not extend into the future target window of the evaluation row. The checks also inspect source coverage and compare training, validation, and test behaviour, which prevents acceptance of suspiciously optimistic results without further scrutiny.
 
-The overall intention of the methodology is conservative. The thesis prefers a weaker but believable result over an inflated result produced by loose alignment, optimistic evaluation, or metric choice. That design choice is especially important in an emerging-market setting with limited bilingual data.
+The overall intention of the methodology is conservative. The thesis prefers a weaker but believable result over an inflated result produced by loose alignment, optimistic evaluation, or metric choice. That choice matters even more given how thin bilingual EGX data is.
 
 \section{Auxiliary Experiment Protocols}
 
-In addition to the final sentiment-only benchmark, the thesis specifies four auxiliary experiments that explain how the research process evolves and where future work should go. These experiments are not used to replace the accepted final benchmark. Their role is to test surrounding claims and to prevent undocumented exploratory work from being reported informally.
+Alongside the main benchmark, the thesis runs four auxiliary experiments to show how the research evolved and where it should go next. They do not replace the accepted final benchmark. Their job is to test specific surrounding claims and to make sure no exploratory work gets reported without proper documentation.
 
 The first auxiliary experiment returns to the original industrial motivation. An external EGX direction-forecasting repository developed during the Robin/Beltone internship is re-run as a historical price-based baseline. The same chronological train-test split is used for each ticker-model pair, and the baseline feature set is compared against an augmented version that adds one-day-lagged bilingual sentiment features. This design tests whether sentiment adds value inside a richer market-feature model, but it is treated as exploratory because the target formulation and feature regime differ from the stricter sentiment-only benchmark.
 
@@ -169,4 +169,4 @@ The fourth auxiliary experiment evaluates social-media feasibility. The target i
 
 \section{Chapter Summary}
 
-This chapter described the solution approach adopted in the thesis. The method begins with bilingual Mubasher news collection, converts cleaned company-linked articles into language-aware sentiment scores, formalises the entity-match confidence filter and the confidence-weighted daily aggregation in equations (\ref{eq:confidence_filter})--(\ref{eq:daily_aggregation}), aligns the resulting daily features conservatively to later trading dates through the lag in (\ref{eq:daily_aggregation}), and evaluates their forecasting value under chronological walk-forward validation. The chapter also defined the auxiliary experiment protocols used to document historical-model integration, sentiment-return association, Arabic financial-domain adaptation, and social-media feasibility. The next chapter reports the concrete implementation settings and the empirical results obtained from this design.
+This chapter described the full solution design. It starts from bilingual Mubasher news, scores articles using language-specific sentiment models, applies the confidence filter and weighted aggregation defined in equations (\ref{eq:confidence_filter})--(\ref{eq:daily_aggregation}), shifts the resulting daily features back by one calendar day to avoid look-ahead, and evaluates them under walk-forward validation. The four auxiliary experiment protocols were also defined here. The next chapter reports the implementation settings and the results.
