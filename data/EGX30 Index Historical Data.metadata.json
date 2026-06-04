@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-05-31T13:04:07.304488+00:00",
+  "source_url": "https://static.mubasher.info/File.MubasherCharts/File.Historical_Index_Charts_Dir/39d67d8ab4f4c10bf22aa353e27879133c.csv",
+  "target": "EGX30",
+  "usage": "target_construction_only",
+  "rows": 2214,
+  "first_date": "2016-04-21",
+  "last_date": "2026-04-20",
+  "sha256": "a3e5cf6873e4b0c8ef2f25130b5d084911dbb6b3b19e18cb3be3e43567fd9822",
+  "csv_path": "data/EGX30 Index Historical Data.csv"
+}

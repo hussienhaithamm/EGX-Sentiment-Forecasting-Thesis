@@ -1,38 +1,27 @@
-# Overfitting Report
+# EGX30 Full-Universe Overfitting Report
 
-Rows checked: 45
-Rows flagged for train/test overfitting: 14
+Rows checked: `18`
 
-A row is flagged when train-test accuracy or balanced-accuracy gap exceeds 0.10, train-test F1 gap exceeds 0.20, or test RMSE is more than 1.5x train RMSE.
+Rows flagged: `9`
 
-## Previous Headline Accuracy Candidate
+A row is flagged when the absolute train-test accuracy or balanced-accuracy gap exceeds `0.10`, or the absolute F1 gap exceeds `0.20`.
 
-OIH 5-day event-weighted bilingual test accuracy is `0.563` with balanced accuracy `0.502`.
-Train accuracy is `0.625` and validation accuracy is `0.505`.
-Overall overfit flag for this row: `True`. This row should not be treated as the accepted best model.
+## Largest Accuracy Gaps
 
-## Accepted Validity-Passing Candidate
-
-The strongest candidate that passes the explicit validity filter is `CIB` horizon `5` `event_only` `bilingual`.
-Validation accuracy/balanced accuracy: `0.546` / `0.506`.
-Test accuracy/balanced accuracy/F1/sign accuracy: `0.566` / `0.517` / `0.702` / `0.551`.
-Overall overfit flag for this row: `False`.
-
-## Highest Train-Test Accuracy Gaps
-
-| Horizon | Strategy | Ticker | View | Train Acc. | Val Acc. | Test Acc. | Train-Test Gap | Flag |
-| ---: | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 5 | event_only | OIH | bilingual | 0.590 | 0.528 | 0.423 | 0.167 | True |
-| 1 | event_weighted | OIH | bilingual | 0.619 | 0.453 | 0.453 | 0.166 | True |
-| 5 | all_news | OIH | bilingual | 0.585 | 0.524 | 0.425 | 0.160 | True |
-| 1 | event_only | OIH | bilingual | 0.600 | 0.449 | 0.443 | 0.157 | True |
-| 1 | all_news | OIH | bilingual | 0.588 | 0.457 | 0.449 | 0.140 | True |
-| 1 | event_weighted | CIB | bilingual | 0.619 | 0.533 | 0.485 | 0.135 | True |
-| 3 | all_news | OIH | english_only | 0.581 | 0.524 | 0.461 | 0.120 | True |
-| 3 | all_news | OIH | bilingual | 0.586 | 0.524 | 0.467 | 0.119 | True |
-| 5 | event_weighted | TMG | bilingual | 0.611 | 0.544 | 0.493 | 0.118 | True |
-| 1 | all_news | CIB | bilingual | 0.589 | 0.518 | 0.487 | 0.102 | True |
-
-## Interpretation
-
-Several higher-dimensional feature sets show large in-sample training performance that does not carry to validation/test. Final claims should therefore be based on validation/test metrics only. The OIH 5-day event-weighted accuracy improvement is measured on test data but is flagged for overfitting, so it is exploratory. The accepted candidate is still weak because its balanced accuracy remains close to random.
+| Source | View | Horizon | Train Accuracy | Test Accuracy | Accuracy Gap | Balanced Gap | F1 Gap | Flag |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| finbert_arabert | bilingual | 3 | 0.622 | 0.404 | 0.218 | 0.225 | 0.148 | True |
+| finbert_camelbert | bilingual | 5 | 0.575 | 0.381 | 0.194 | 0.124 | 0.104 | True |
+| finbert_arabert | english_only | 5 | 0.535 | 0.356 | 0.178 | 0.109 | 0.070 | True |
+| finbert_camelbert | english_only | 5 | 0.535 | 0.356 | 0.178 | 0.109 | 0.070 | True |
+| finbert_arabert | arabic_only | 5 | 0.626 | 0.460 | 0.166 | 0.185 | 0.078 | True |
+| finbert_camelbert | bilingual | 3 | 0.678 | 0.522 | 0.156 | 0.184 | 0.090 | True |
+| finbert_arabert | bilingual | 1 | 0.661 | 0.522 | 0.139 | 0.149 | 0.087 | True |
+| finbert_camelbert | arabic_only | 5 | 0.464 | 0.332 | 0.132 | -0.001 | -0.022 | True |
+| finbert_arabert | english_only | 1 | 0.579 | 0.493 | 0.087 | 0.090 | 0.051 | False |
+| finbert_camelbert | english_only | 1 | 0.579 | 0.493 | 0.087 | 0.090 | 0.051 | False |
+| finbert_arabert | bilingual | 5 | 0.713 | 0.639 | 0.075 | 0.155 | 0.018 | True |
+| finbert_arabert | english_only | 3 | 0.590 | 0.517 | 0.073 | 0.084 | 0.042 | False |
+| finbert_camelbert | english_only | 3 | 0.590 | 0.517 | 0.073 | 0.084 | 0.042 | False |
+| finbert_arabert | arabic_only | 3 | 0.595 | 0.660 | -0.065 | 0.004 | -0.057 | False |
+| finbert_camelbert | arabic_only | 3 | 0.542 | 0.478 | 0.064 | 0.045 | -0.035 | False |

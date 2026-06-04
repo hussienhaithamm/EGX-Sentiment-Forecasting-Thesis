@@ -1,0 +1,27 @@
+{
+  "coverage": {
+    "total_articles": 4782,
+    "top5_share": 0.30029276453366793,
+    "top10_share": 0.485780008364701,
+    "hhi": 0.03690395164776038,
+    "one_company_covered_day_share": 0.15495867768595042,
+    "warnings": [
+      "No concentration warning crossed the pre-set thresholds."
+    ]
+  },
+  "baselines": {
+    "sentiment_rows_beating_training_majority": 8,
+    "sentiment_test_rows": 18
+  },
+  "abstention": {
+    "rows": 54
+  },
+  "sector": {
+    "sectors": 12
+  },
+  "weighting": {
+    "equal_article_weight_corr": 0.9792638239405093,
+    "index_weights_available": false
+  },
+  "report_dir": "reports"
+}

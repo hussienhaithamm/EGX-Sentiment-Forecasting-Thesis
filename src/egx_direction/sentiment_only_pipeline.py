@@ -22,6 +22,7 @@ from sklearn.metrics import (
     balanced_accuracy_score,
     confusion_matrix,
     f1_score,
+    matthews_corrcoef,
     mean_absolute_error,
     mean_squared_error,
     precision_score,
@@ -1070,6 +1071,11 @@ def compute_direction_metrics(predictions: pd.DataFrame) -> Dict[str, object]:
             "recall": math.nan,
             "f1": math.nan,
             "balanced_accuracy": math.nan,
+            "mcc": math.nan,
+            "actual_up_share": math.nan,
+            "predicted_up_share": math.nan,
+            "majority_baseline_accuracy": math.nan,
+            "delta_vs_majority_baseline": math.nan,
             "tn": 0,
             "fp": 0,
             "fn": 0,
@@ -1079,13 +1085,22 @@ def compute_direction_metrics(predictions: pd.DataFrame) -> Dict[str, object]:
     y_true = predictions["actual_direction"].astype(int).to_numpy()
     y_pred = predictions["predicted_direction"].astype(int).to_numpy()
     tn, fp, fn, tp = confusion_matrix(y_true, y_pred, labels=[0, 1]).ravel()
+    actual_up_share = float(np.mean(y_true)) if len(y_true) else math.nan
+    predicted_up_share = float(np.mean(y_pred)) if len(y_pred) else math.nan
+    majority_baseline_accuracy = float(max(actual_up_share, 1.0 - actual_up_share)) if len(y_true) else math.nan
+    accuracy = float(accuracy_score(y_true, y_pred))
     return {
         "rows": int(len(predictions)),
-        "accuracy": float(accuracy_score(y_true, y_pred)),
+        "accuracy": accuracy,
         "precision": float(precision_score(y_true, y_pred, zero_division=0)),
         "recall": float(recall_score(y_true, y_pred, zero_division=0)),
         "f1": float(f1_score(y_true, y_pred, zero_division=0)),
         "balanced_accuracy": float(balanced_accuracy_score(y_true, y_pred)),
+        "mcc": float(matthews_corrcoef(y_true, y_pred)) if len(set(y_true)) > 1 or len(set(y_pred)) > 1 else 0.0,
+        "actual_up_share": actual_up_share,
+        "predicted_up_share": predicted_up_share,
+        "majority_baseline_accuracy": majority_baseline_accuracy,
+        "delta_vs_majority_baseline": accuracy - majority_baseline_accuracy,
         "tn": int(tn),
         "fp": int(fp),
         "fn": int(fn),

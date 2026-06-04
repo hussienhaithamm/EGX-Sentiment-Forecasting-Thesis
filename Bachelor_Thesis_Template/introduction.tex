@@ -1,46 +1,54 @@
 \chapter{Introduction}
 \label{chap:intro}
 
-Stock markets are not only trading venues. They are mechanisms for capital allocation, corporate financing, and risk transfer. When public information is absorbed into prices, the speed and quality of that absorption affect investors, listed firms, and the broader economy \cite{fama1970, lo1988randomwalk, sezer2020dlreview}. For research desks and brokerage institutions, the practical question is therefore not merely whether prices move. The question is whether new information can be interpreted quickly enough to support better decisions before the reaction is fully reflected in the market. This economic relevance is one reason why stock forecasting remains a persistent research problem.
+Financial markets allocate capital, transfer risk, and react continuously to public information. When listed firms release news or when financial media reports new developments, investors update expectations about value and risk. For analysts and research desks, the practical question is not simply whether prices move. It is whether public information can be processed in a disciplined way before its relation to future market direction disappears.
 
-The technical difficulty begins with an information asymmetry. Numerical market series record the market reaction after it occurs. News, disclosures, and commentary describe the events that may have triggered that reaction. A price chart reveals that a move happened. It does not explain whether the move followed earnings news, financing plans, governance changes, or contract announcements. This gap is why researchers have turned to text as an additional signal on top of price history \cite{tetlock2007media, kearney2014survey, sezer2020dlreview}.
+Short-horizon forecasting is difficult because market reactions are noisy and unstable. Public information can be absorbed quickly, and the same type of news may have different effects across market regimes. The efficient-market literature explains why persistent predictability is hard to find, while empirical forecasting studies show that weak and conditional patterns may still exist under carefully defined targets and validation protocols \cite{fama1970, lo1988randomwalk, sezer2020dlreview}.
 
-Existing research therefore moves from price-only forecasting toward multimodal forecasting that combines market variables with textual sentiment, event representations, or contextual language-model features. The evidence is encouraging but not uniform. Some studies report measurable gains from financial news or social-media sentiment. Others show that those gains depend strongly on the text source, the forecast horizon, the market under study, and the evaluation protocol \cite{das2007yahoo, bollen2011twitter, dahal2023comparative, liapis2023deep}. The relevant scientific question is conditional: under what data and validation conditions does sentiment add predictive value?
+Financial news is relevant because it contains semantic information that price histories do not directly encode. A price series records that a movement occurred, but it does not explain whether the movement followed earnings news, financing plans, governance changes, regulation, or contracts. Textual sentiment is therefore useful as a research signal because it tests whether the tone and relevance of public news contain incremental information beyond numerical market history \cite{tetlock2007media, kearney2014survey}.
 
-This question is especially important on the Egyptian Exchange (EGX), where firm-related financial coverage appears in both Arabic and English. A forecasting pipeline that ignores one of the two languages discards part of the information environment. A pipeline that combines both languages without careful routing and relevance control can instead amplify noise. This thesis grew out of a bachelor project with Robin, the data-science arm of Beltone Holding, where this issue is practical rather than abstract. The working need is a test of whether bilingual financial-news sentiment supports EGX-oriented forecasting analysis under a setting that remains interpretable, conservative, and reproducible. Prior work on finance-specific English sentiment modelling, Arabic-specialised language models, and conservative sentiment-evaluation design supports an emphasis on language-aware modelling and strict temporal alignment \cite{araci2019finbert, antoun2020arabert, abdulmageed2021arbert, liapis2023deep}.
+Most sentiment-forecasting work focuses on developed markets, English text, social media, or models that combine text with price-derived predictors. Those settings are useful but do not directly answer the Egyptian-market question. The Egyptian Exchange is a bilingual Arabic-English information environment, and the EGX30 index provides a broad market target that is more appropriate for market-mood aggregation than a small set of selected equities.
+
+This thesis studies a narrow problem: whether bilingual financial-news sentiment from point-in-time EGX30 constituents contains short-horizon directional information for the EGX30 index. The feature matrix excludes historical prices, EGX30 closes are used only to build labels, and balanced accuracy is treated as more important than raw accuracy because the direction labels are imbalanced.
 
 \section{Problem Statement}
 
-This thesis investigates whether sentiment extracted from bilingual financial news improves short-horizon stock direction forecasting in order to determine the predictive value of sentiment-derived signals for three EGX equities: Commercial International Bank (CIB), Talaat Moustafa Group (TMG), and Orascom Investment Holding (OIH).
+There is limited reproducible evidence on whether Arabic-English financial-news sentiment from the historical EGX30 constituent universe contains short-horizon directional information for the EGX30 index. Existing work often uses English-only data, current constituent lists, price-derived predictors, or evaluation protocols that are difficult to audit. This creates a gap for an Egyptian-market study that combines point-in-time market coverage, bilingual sentiment processing, sentiment-only predictors, and strict walk-forward validation.
 
 \section{Motivation}
 
-The industrial context of the study motivates the chosen design. In the Robin and Beltone workflow that motivates the thesis, analysts face a mixed Arabic-English news stream, uneven company coverage, and many articles that are attached to a company page without being equally relevant to valuation. A forecasting signal in that setting must do more than assign positive or negative labels. It must route each language to an appropriate sentiment model. It must distinguish direct company coverage from weaker mentions. It must aggregate articles in a way that preserves timing and relevance. This strategy is consistent with prior work showing that source choice, finance-specific English sentiment modelling, and Arabic-specialised encoders materially affect the quality of textual sentiment signals \cite{kearney2014survey, araci2019finbert, antoun2020arabert}.
+The main motivation is methodological clarity. If sentiment is mixed immediately with prices, returns, volume, or technical indicators, it becomes difficult to tell whether text itself contributes useful information. A sentiment-only benchmark isolates the textual signal first. Later price-plus-sentiment models can be evaluated more fairly only after this baseline is understood.
 
-A second motivation is methodological. A strong price-based forecasting system can hide whether sentiment is informative or whether it is merely an additive feature inside an already expressive model. The thesis therefore adopts a sentiment-only benchmark before any later integration with richer market features. This choice makes the interpretation cleaner. The choice also aligns with the cautionary literature on sentiment forecasting, where apparent gains often disappear once feature leakage, horizon choice, or loose validation procedures are controlled more strictly \cite{liapis2023deep, dahal2023comparative, sezer2020dlreview}.
+The second motivation is local relevance. EGX-related news is not purely English and not purely Arabic. A method that ignores either language loses part of the information environment, while mixing both languages without routing can introduce avoidable noise. Comparing Arabic encoder choices is part of the core study, not a separate side experiment.
+
+The third motivation is reproducibility. The EGX30 changes over time, so using the current index composition to collect past news would bias the study toward firms that survived into the present list. Reconstructing the point-in-time constituent universe makes the corpus and the market target consistent.
 
 \section{Research Questions}
 
-\noindent\textbf{RQ1.} To what extent does bilingual financial-news sentiment contain predictive information for short-horizon EGX stock direction forecasting?
+\noindent\textbf{RQ1.} Does bilingual financial-news sentiment from point-in-time EGX30 constituents contain short-horizon directional information for the EGX30 index?
 
-\noindent\textbf{RQ2.} How do language-specific routing, article relevance, and event-aware aggregation affect the quality of the extracted sentiment signal?
+\noindent\textbf{RQ2.} How do Arabic sentiment encoder choice and forecast horizon affect sentiment-only EGX30 direction classification performance?
 
-\noindent\textbf{RQ3.} Do any observed predictive gains remain valid under strictly chronological and leakage-safe evaluation, and what do auxiliary experiments with historical-model integration, sentiment-return correlation, Arabic financial-domain adaptation, and social-media feasibility reveal about the future development path of EGX sentiment forecasting?
+\noindent\textbf{RQ3.} Do any observed results remain meaningful under leakage-safe walk-forward validation, class-imbalance diagnostics, and stronger baseline comparisons?
 
 \section{Objectives}
 
-\noindent\textbf{Objective 1.} Design a bilingual financial-news forecasting formulation for the three target EGX equities.
+\noindent\textbf{Objective 1.} Reconstruct a point-in-time EGX30 constituent universe for the study period.
 
-\noindent\textbf{Objective 2.} Develop a sentiment extraction framework that distinguishes Arabic and English article processing through language routing.
+\noindent\textbf{Objective 2.} Collect, normalize, and score Arabic and English financial-news articles linked to historical EGX30 constituents.
 
-\noindent\textbf{Objective 3.} Construct sentiment features that account for article relevance, language composition, and event structure.
+\noindent\textbf{Objective 3.} Construct sentiment-only daily market-mood features while excluding all price-derived predictors from the model matrix.
 
-\noindent\textbf{Objective 4.} Evaluate the resulting forecasting signal under chronological validation and test splits with explicit leakage controls.
+\noindent\textbf{Objective 4.} Define 1-, 3-, and 5-trading-day EGX30 direction labels using historical closes only for target construction.
 
-\noindent\textbf{Objective 5.} Implement and document four auxiliary protocols (historical-model integration, sentiment-return association, Arabic financial-domain adaptation, social-media feasibility) so that the research journey is auditable.
+\noindent\textbf{Objective 5.} Evaluate sentiment-only forecasting performance under strict expanding-window walk-forward validation.
 
-\noindent\textbf{Objective 6.} Analyse whether the observed sentiment signal is strong enough to justify further sentiment-enhanced forecasting work in the Egyptian market and recommend next steps for richer multimodal forecasting.
+\noindent\textbf{Objective 6.} Audit coverage, leakage, class imbalance, baseline performance, and robustness so that the results are interpreted conservatively.
 
 \section{Thesis Outline}
 
-The remainder of this thesis is organised as follows. Chapter~\ref{chap:background} establishes the background concepts required for the study: forecasting targets, class imbalance in directional prediction, financial text as an exogenous information source, transformer-based sentiment extraction, and leakage-safe evaluation. Chapter~\ref{chap:related} reviews state-of-the-art work on sentiment-based stock forecasting and positions the present thesis within that literature. Chapter~\ref{chap:methodology} presents the solution approach adopted in the study. Chapter~\ref{chap:results} reports the implementation choices, experimental setup, and empirical findings. Chapter~\ref{chap:conclusion} summarises the main conclusions and outlines future research directions.
+The thesis keeps the existing six-chapter structure of the template. Chapter~\ref{chap:background} introduces financial forecasting, directional labels, sentiment analysis, bilingual NLP, and leakage-safe evaluation. Chapter~\ref{chap:related} reviews prior work and narrows the research gap. Chapter~\ref{chap:methodology} presents the proposed point-in-time bilingual sentiment pipeline. Chapter~\ref{chap:results} reports dataset coverage, baseline comparisons, main results, robustness checks, and validity audits. Chapter~\ref{chap:conclusion} concludes the thesis and outlines focused future work.
+
+\section{Chapter Summary}
+
+This chapter established the central story of the thesis. The problem is not to build a deployable trading system, but to test whether bilingual market mood contains weak directional information for EGX30 index classification. The research questions and objectives therefore focus on point-in-time coverage, sentiment-only feature construction, and strict evaluation. The next chapter introduces the background concepts needed to justify those design choices.

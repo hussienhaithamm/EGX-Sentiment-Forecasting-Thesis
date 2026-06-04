@@ -67,7 +67,10 @@ def parse_args() -> argparse.Namespace:
         "--sentiment-labeled-path",
         default="data/processed/news/sentiment_ready/sentiment_labeled_articles.csv",
     )
-    parser.add_argument("--output-dir", default="outputs/final_sentiment_experiments")
+    parser.add_argument("--output-dir")
+    parser.add_argument("--target-scope", choices=("equities", "egx30"), default="equities")
+    parser.add_argument("--target-price-path", default="data/EGX30 Index Historical Data.csv")
+    parser.add_argument("--llm-cache-path")
     parser.add_argument("--raw-news-dir", default="data/raw/news/mubasher_sentiment_only")
     parser.add_argument("--tickers", nargs="+", default=["CIB", "TMG", "OIH"])
     parser.add_argument("--horizons", nargs="+", type=int, default=[1, 3, 5])
@@ -694,7 +697,28 @@ def update_summary_with_phase7(output_dir: Path, leakage_report: Dict[str, objec
 
 def main() -> None:
     args = parse_args()
-    output_dir = Path(args.output_dir)
+    output_dir = Path(
+        args.output_dir
+        or (
+            "outputs/egx30_sentiment_only_experiments"
+            if args.target_scope == "egx30"
+            else "outputs/final_sentiment_experiments"
+        )
+    )
+    if args.target_scope == "egx30":
+        from run_egx30_validity_checks import run_checks
+
+        report = run_checks(
+            sentiment_labeled_path=Path(args.sentiment_labeled_path),
+            target_price_path=Path(args.target_price_path),
+            llm_cache_path=Path(args.llm_cache_path) if args.llm_cache_path else None,
+            output_dir=output_dir,
+            news_tickers=args.tickers,
+            horizons=args.horizons,
+            rolling_windows=args.rolling_windows,
+        )
+        print(json.dumps(report, indent=2, default=str))
+        return
     output_dir.mkdir(parents=True, exist_ok=True)
 
     config = SentimentOnlyPipelineConfig(

@@ -2,6 +2,8 @@
 
 \usepackage[a4paper,margin=1in]{geometry}
 \usepackage{setspace}
+\emergencystretch=3em
+\hbadness=10000
 
 % \usepackage{fancyhdr}
 % \setlength{\headheight}{20pt} 
@@ -10,31 +12,48 @@
 \usepackage[hyphens]{url}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
 \floatstyle{plaintop}
 \restylefloat{table}
+\newfloat{algorithm}{htbp}{loa}[chapter]
+\floatname{algorithm}{Algorithm}
 \usepackage{subfig}
 \usepackage{array}
 % \usepackage{xtab}
 \usepackage{multirow}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{longtable}
 \usepackage{appendix}
+\usepackage{pdflscape}
 \usepackage[pdfborder={0 0 0}, colorlinks=true, linkcolor=black, citecolor=blue]{hyperref}
 \usepackage[printonlyused]{acronym}
 \usepackage{ifpdf}
 \graphicspath{{./images/}}
 % \setlength{\parindent}{0pt}
+\newcommand{\codepath}[1]{\begingroup\footnotesize\ttfamily\detokenize{#1}\endgroup}
+\newcommand{\codecmd}[1]{\begingroup\footnotesize\ttfamily\detokenize{#1}\endgroup}
+\newenvironment{pathblock}{\par\smallskip\noindent\hspace*{2em}\begin{tabular}{@{}l@{}}}{\end{tabular}\par\smallskip}
+\newcommand{\pathrow}[1]{\codepath{#1}\\}
 \newcommand{\submissionDay}{8}
 \newcommand{\submissionMonth}{June}
 \newcommand{\submissionYear}{2026}
 \newcommand{\submissionDate}{\submissionDay~\submissionMonth~\submissionYear}
 \newcommand{\typeOfThesis}{Bachelor Thesis}
 
-\newcommand{\titleOfThesisOne}{Sentiment-Enhanced Deep Stock Market Forecasting Using Bilingual Financial News: An Egyptian Market Case Study}
+\newcommand{\titleOfThesisOne}{Market Mood in Two Languages: Bilingual Financial-News Sentiment for EGX30 Direction Forecasting}
 
 \newcommand{\authorOfThesis}{Hussien Haitham Hussien Abdelmotaleb Hussien}
 \newcommand{\supervisorOne}{Dr. Mervat AbuElkheir}
+
+\hypersetup{
+	pdftitle={Market Mood in Two Languages: Bilingual Financial-News Sentiment for EGX30 Direction Forecasting},
+	pdfauthor={Hussien Haitham Hussien Abdelmotaleb Hussien},
+	pdfsubject={Bachelor Thesis}
+}
 
 \newcommand{\includefig}[4]{
     \begin{figure}[ht]
@@ -65,11 +84,10 @@
 
 \ifpdf
 \pdfinfo {
-	/Author (\authorOfThesis)
-	/Title (\titleOfThesisOne)
-	/Subject (\typeOfThesis)
+	/Author (Hussien Haitham Hussien Abdelmotaleb Hussien)
+	/Title (Market Mood in Two Languages: Bilingual Financial-News Sentiment for EGX30 Direction Forecasting)
+	/Subject (Bachelor Thesis)
 	/Keywords ()
-	/CreationDate (D:20090707085533)
 }
 \fi
 

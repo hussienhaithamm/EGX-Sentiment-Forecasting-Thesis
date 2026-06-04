@@ -43,6 +43,7 @@ outputs/arabert_financial_adaptation/arabert_financial_mlm/
 *.bbl
 *.blg
 *.lof
+*.lot
 *.log
 *.out
 *.synctex.gz
@@ -71,3 +72,16 @@ Bachelor_Thesis_Template/images/kaggle_model\(federated\).png
 
 # Intermediate pipeline JSONL files (large byproducts of the rebuild script)
 data/processed/news/sentiment_ready/*.jsonl
+
+# Regenerable EGX30 full-universe materializations. Keep compact registries,
+# metrics, validity reports, summaries, and source code visible for review.
+data/scraped_cache/egx30_5yr/
+data/processed_news_5yr.csv
+data/processed_news_5yr.prepared.csv
+data/processed_news_5yr_camelbert.csv
+data/pipeline_state.json
+outputs/egx30_5yr_universe_experiments/features/
+outputs/egx30_5yr_universe_experiments/panels/
+outputs/egx30_5yr_universe_experiments/predictions/
+outputs/egx30_5yr_universe_experiments/prices/
+outputs/egx30_5yr_universe_experiments/*_pit_scoped_articles.csv

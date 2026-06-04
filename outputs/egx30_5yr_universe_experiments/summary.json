@@ -1,0 +1,16 @@
+{
+  "target": "EGX30",
+  "target_usage": "labels_only",
+  "constituent_validation": "PASS",
+  "sentiment_sources": [
+    "finbert_arabert",
+    "finbert_camelbert"
+  ],
+  "processed_articles": 9635,
+  "pit_scoped_articles": {
+    "finbert_arabert": 4782,
+    "finbert_camelbert": 4782
+  },
+  "direction_metrics_path": "data/egx30_5yr_universe_metrics.csv",
+  "return_metrics_path": "outputs/egx30_5yr_universe_experiments/metrics/return_metrics.csv"
+}

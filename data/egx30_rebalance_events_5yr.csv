@@ -1,0 +1,13 @@
+Effective_Date,Date_To,Added,Removed,Company_Count,Source,Transition_Note
+2021-04-21,2021-07-31,,,31,https://mondovisione.com/media-and-resources/news/egxs-periodic-market-indices-review-2021127/,OIH/OFH demerger transition: accepted 31-company state.
+2021-08-01,2021-10-12,CIRA|EGTS|MFPC|RAYA|RMDA|SPMD,CICH|EDBE|EFID|EMFD|OCDI|OFH|OIH,30,https://mondovisione.com/media-and-resources/news/egxs-semi-annual-review-of-egx-indices-2021728/,
+2021-10-13,2022-01-31,ASPI|GDWA|PRDC,PIOH,32,https://www.dailynewsegypt.com/2021/10/12/egx-launches-trading-on-pioneers-holding-demerged-companies/,Pioneers demerger transition: accepted 32-company state.
+2022-02-01,2022-07-31,ADIB|EFIH|HDBK|ORAS,ASPI|EGTS|GDWA|PRDC|RAYA|SPMD,30,https://mondovisione.com/media-and-resources/news/egx-index-committee-approves-the-semi-annual-periodic-review-of-the-indices-2022126/,
+2022-08-01,2023-01-31,ALCN|JUFO|QNBA,ADIB|MTIE|ORHD,30,https://www.egx.com.eg/downloads/press_release_28-07-2022_english.pdf,
+2023-02-01,2023-07-31,ADIB|EFID|TALM,ALCN|HDBK|QNBA,30,https://www.egypttoday.com/Article/3/122238/3-companies-enter-EGX30-after-periodic-review,
+2023-08-01,2024-01-31,ALCN|BINV|BTFH|ORHD,CLHO|ISPH|RMDA|TALM,30,https://egx.com.eg/downloads/august_2023_rebalance_en_30-07-2023_english.pdf,
+2024-02-01,2024-07-31,DELTA|ISPH|PHAR,BINV|CIEB|CIRA,30,https://www.egx.com.eg/downloads/egx_30_rebalance_en_31-01-2024_english.pdf,
+2024-08-01,2025-02-01,BINV|CIEB|CLHO|EMFD|FAIT,CCAP|DELTA|ISPH|ORHD|PHAR,30,https://enterpriseam.com/egypt/2024/07/31/emaar-misr-b-investments-credit-agricole-and-more-join-egx30-after-index-review/,
+2025-02-02,2025-08-02,CCAP|EGAL|ISPH|ORHD|PHAR|RMDA,BINV|CLHO|ESRS|FAIT|HELI|SWDY,30,https://mondovisione.com/media-and-resources/news/the-egyptian-exchange-egx-announces-the-semi-annual-review-of-its-market-indic-2025130/,
+2025-08-03,2026-01-31,ARCC|MCQE|RAYA,ALCN|EFID|PHAR,30,https://mondovisione.com/media-and-resources/news/the-egyptian-exchange-egx-announces-the-semi-annual-review-of-its-market-indic-2025730/,
+2026-02-01,2026-04-20,EFID|EGCH|HELI|OIH,CIEB|MASR|MFPC|SKPC,30,https://mondovisione.com/_assets/files/press_release_indices_feb_2026_english_english.pdf,

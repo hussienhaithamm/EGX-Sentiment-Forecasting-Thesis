@@ -164,7 +164,7 @@ def write_report(results: pd.DataFrame, output_path: Path, metadata: Dict[str, o
                 f"The adapted checkpoint does not lower validation MLM loss in this run; validation loss changes by {delta:.4f} relative to the base AraBERT model."
             )
     lines.append(
-        "This result can support a domain-adaptation feasibility claim only. It does not prove better stock forecasting or better sentiment classification."
+        "This result can support a domain-adaptation feasibility claim only. It does not establish better stock forecasting or better sentiment classification."
     )
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

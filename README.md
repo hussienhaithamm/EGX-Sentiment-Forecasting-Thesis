@@ -1,174 +1,75 @@
-# EGX Sentiment Forecasting Thesis
+# Market Mood in Two Languages
 
-Repository: <https://github.com/hussienhaithamm/EGX-Sentiment-Forecasting-Thesis>
+This repository implements a leakage-safe financial NLP benchmark for predicting the direction of the Egyptian Exchange `EGX30` index from Arabic and English news sentiment only.
 
-This repository contains the reproducible implementation, experiment outputs, and thesis source for **Sentiment-Enhanced Deep Stock Market Forecasting Using Bilingual Financial News: An Egyptian Market Case Study**.
+The production study uses a survivorship-bias-free point-in-time registry for `2021-04-21` through `2026-04-20`. It reconstructs 12 EGX30 membership intervals and a 57-company historical union. EGX30 closing prices are restricted to target construction; no price-derived feature enters the model matrix.
 
-The project studies whether Arabic and English financial-news sentiment carries useful short-horizon forecasting information for selected Egyptian Exchange equities:
+## Pipeline
 
-- Commercial International Bank: `CIB`, `COMI`
-- Talaat Moustafa Group: `TMG`, `TMGH`
-- Orascom Investment Holding: `OIH`
+1. Build and validate the point-in-time historical EGX30 company registry.
+2. Resumably scrape bilingual Mubasher news for the full historical company union.
+3. Score English articles with FinBERT and compare Arabic scoring routes using AraBERT and CAMeLBERT.
+4. Deduplicate stories across company pages and compute equal-weight active-constituent market mood features.
+5. Predict 1, 3, and 5 trading-day EGX30 direction under embargoed expanding-window walk-forward validation.
+6. Run independent target, lag, membership, walk-forward-history, and metric-parity audits.
+7. Generate easy-win robustness reports: corpus coverage, stronger naive baselines, class-imbalance diagnostics, sector aggregation, weighting availability, and abstention/high-signal tests.
 
-The core benchmark is intentionally conservative. It tests sentiment-only features, without open-high-low-close-volume features or technical indicators, under chronological splits, walk-forward evaluation, embargoes, and explicit leakage checks.
+## Production Results
 
-## What Is Included
+| Sentiment source | Horizon | Accuracy | Balanced accuracy | F1 |
+| --- | --- | --- | --- | --- |
+| finbert_arabert | 1 | 0.522 | 0.512 | 0.591 |
+| finbert_arabert | 3 | 0.404 | 0.416 | 0.447 |
+| finbert_arabert | 5 | 0.639 | 0.536 | 0.754 |
+| finbert_camelbert | 1 | 0.621 | 0.545 | 0.737 |
+| finbert_camelbert | 3 | 0.522 | 0.495 | 0.614 |
+| finbert_camelbert | 5 | 0.381 | 0.489 | 0.378 |
 
-```text
-src/
-  egx_direction/          Sentiment-only targets, features, event labels, evaluation helpers
-  news_pipeline/          Mubasher collection, cleaning, ticker matching, sentiment routing
-scripts/
-  run_multi_horizon_event_evaluation.py
-  run_phase7_validity_checks.py
-  run_historical_sentiment_feature_experiment.py
-  run_sentiment_stock_impact_analysis.py
-  run_arabert_financial_adaptation_experiment.py
-  evaluate_arabert_financial_adaptation.py
-  run_social_media_source_feasibility.py
-data/
-  raw/news/mubasher_sentiment_only/
-  processed/news/sentiment_ready/
-outputs/
-  final_sentiment_experiments/
-  historical_sentiment_feature_experiment/
-  sentiment_stock_impact_analysis/
-  arabert_financial_adaptation/
-  social_media_feasibility/
-Bachelor_Thesis_Template/
-  bachelor.tex            Main LaTeX thesis entry point
-  bachelor.pdf            Compiled thesis PDF
-docs/
-  experiment_log.md
-  paper_research_journey_plan.md
-  master_thesis_checklist_audit.md
-tests/
-```
+The strongest validity-gated bilingual row by balanced accuracy is `finbert_camelbert` at horizon `1`, with accuracy `0.621`, balanced accuracy `0.545`, and F1 `0.737`. These results should be described as promising but limited evidence of weak directional signal. Balanced accuracy is prioritized over raw accuracy because raw accuracy is partially explained by class imbalance and majority-class behavior.
 
-Large model weights are intentionally excluded from Git. The AraBERT financial-adaptation checkpoint directory is ignored; the corpus, metadata, evaluation CSVs, and reports are tracked.
+## Robustness and Easy-Win Validity Extensions
 
-## Main Findings
+The additive easy-win reports live under `reports/`:
 
-- The final sentiment-only benchmark is leakage-safe but weak as a standalone forecasting model.
-- The strongest validity-passing sentiment-only result is `OIH`, 5-day horizon, all-news bilingual view:
-  - test accuracy `0.532`
-  - balanced accuracy `0.503`
-  - F1 `0.630`
-  - return sign accuracy `0.585`
-- Event filtering and event weighting produce isolated gains but no stable aggregate improvement.
-- Adding sentiment to a historical price-based EGX model improves raw accuracy in 5 of 9 ticker/model comparisons, but the effect is conditional.
-- Direct sentiment-return correlation analysis finds no stable monotonic association under the pre-specified threshold.
-- Short Arabic financial-domain adaptation of AraBERT reduces held-out masked-language-model loss from `0.9624` to `0.8468` versus base AraBERT.
-- Social media remains future work unless official approved access is available.
+- `reports/egx30_coverage_audit.md` checks company, yearly, and daily news coverage.
+- `reports/egx30_baseline_comparison.md` compares sentiment models with always-Up, always-Down, training-majority, rolling-majority, article-count-only, and shuffled-sentiment baselines.
+- `reports/egx30_abstention_experiment.md` reports high-signal predictions with coverage and abstained sample counts.
+- `reports/egx30_sector_feature_ablation.md` summarizes compact sector-aware aggregation from a static reviewable map.
+- `reports/egx30_weighting_ablation.md` reports equal-weighted/article-count-weighted sentiment and marks true historical index weights unavailable.
 
-## Setup
-
-Use Python 3.9 or newer.
+## Reproduce
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
+PYTHONPATH=src python3 scripts/run_egx30_5yr_pipeline.py --skip-scrape
 ```
 
-If the package is not installed, run scripts with:
+Remove `--skip-scrape` to resume or refresh the full archive scrape.
 
-```bash
-PYTHONPATH=src python3 <script>
-```
+## Artifact Storage
 
-## Reproducing the Core Experiments
+Raw scrape checkpoints, scored article tables, and large panel/prediction materializations are reproducible local artifacts and are excluded from Git. Commit the compact registries, metrics, validity report, summaries, source code, and thesis files. Publish large research artifacts through versioned external storage when they need to accompany a thesis or research release.
 
-Run the final multi-horizon event-aware benchmark:
+## Limitations
 
-```bash
-PYTHONPATH=src python3 scripts/run_multi_horizon_event_evaluation.py \
-  --refit-every-rows 250 \
-  --classification-c-grid 0.05 0.1 0.5 \
-  --regression-alpha-grid 10.0
-```
+The benchmark is intentionally sentiment-only. It tests whether bilingual constituent news contains weak directional information before any future integration with price-derived predictors. The result is not a deployable trading strategy, and true historical EGX30 constituent weights are unavailable in the reproducible dataset.
 
-Run leakage, coverage, and overfitting checks:
+## Important Artifacts
 
-```bash
-PYTHONPATH=src python3 scripts/run_phase7_validity_checks.py
-```
+- `data/egx30_historical_constituents_5yr.csv`
+- `data/egx30_rebalance_events_5yr.csv`
+- `data/processed_news_5yr.csv`
+- `data/processed_news_5yr_camelbert.csv`
+- `data/egx30_5yr_universe_metrics.csv`
+- `data/egx30_5yr_validity_report.json`
+- `outputs/egx30_5yr_universe_experiments/research_summary.md`
+- `reports/egx30_coverage_audit.md`
+- `reports/egx30_baseline_comparison.md`
+- `reports/egx30_abstention_experiment.md`
 
-Run the historical-model sentiment feature experiment:
-
-```bash
-python3 scripts/run_historical_sentiment_feature_experiment.py
-```
-
-Run the direct sentiment-return association analysis:
-
-```bash
-python3 scripts/run_sentiment_stock_impact_analysis.py
-```
-
-Prepare and run the AraBERT financial-domain adaptation feasibility experiment:
-
-```bash
-python3 scripts/run_arabert_financial_adaptation_experiment.py --run-mlm-training --max-steps 20 --batch-size 2
-python3 scripts/evaluate_arabert_financial_adaptation.py --batch-size 4
-```
-
-Run the social-media official-access feasibility report:
-
-```bash
-python3 scripts/run_social_media_source_feasibility.py
-```
-
-## Important Outputs
-
-Final benchmark:
-
-- `outputs/final_sentiment_experiments/horizon_comparison.csv`
-- `outputs/final_sentiment_experiments/direction_metrics_by_horizon.csv`
-- `outputs/final_sentiment_experiments/return_metrics_by_horizon.csv`
-- `outputs/final_sentiment_experiments/event_model_metrics.csv`
-- `outputs/final_sentiment_experiments/event_vs_all_news_comparison.csv`
-- `outputs/final_sentiment_experiments/leakage_check_report.md`
-- `outputs/final_sentiment_experiments/coverage_analysis.md`
-- `outputs/final_sentiment_experiments/overfitting_report.md`
-
-Auxiliary experiments:
-
-- `outputs/historical_sentiment_feature_experiment/historical_sentiment_summary.md`
-- `outputs/sentiment_stock_impact_analysis/sentiment_stock_impact_report.md`
-- `outputs/arabert_financial_adaptation/arabert_financial_adaptation_report.md`
-- `outputs/arabert_financial_adaptation/arabert_financial_mlm_evaluation_report.md`
-- `outputs/social_media_feasibility/social_media_feasibility_report.md`
-
-Paper and audit documents:
-
-- `Bachelor_Thesis_Template/bachelor.pdf`
-- `Bachelor_Thesis_Template/bachelor.tex`
-- `docs/experiment_log.md`
-- `docs/paper_research_journey_plan.md`
-- `docs/master_thesis_checklist_audit.md`
-
-## Testing
+## Tests
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-The current tests cover sentiment article preparation, lagged feature alignment, split embargo behavior, event keyword labeling, and event feature-panel lagging.
-
-## Thesis Compilation
-
-From `Bachelor_Thesis_Template/`:
-
-```bash
-pdflatex -interaction=nonstopmode -halt-on-error bachelor.tex
-bibtex bachelor
-pdflatex -interaction=nonstopmode -halt-on-error bachelor.tex
-pdflatex -interaction=nonstopmode -halt-on-error bachelor.tex
-```
-
-The compiled PDF is tracked as `Bachelor_Thesis_Template/bachelor.pdf`.
-
-## Notes on Scope
-
-This repository is a research artifact, not a trading system. Results should be interpreted as evidence about bilingual financial-news sentiment under the stated data, alignment, and validation constraints. The thesis deliberately prefers leakage-safe modest results over optimistic results produced by looser evaluation.
+The earlier CIB/TMG/OIH experiments remain useful as a three-company ablation. They are not the production EGX30 benchmark.

@@ -1,0 +1,58 @@
+ticker,company_name,sector,source_note
+ABUK,Abu Qir Fertilizers and Chemicals,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ADIB,Abu Dhabi Islamic Bank Egypt,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ALCN,Alexandria Container and Cargo Handling,Transportation,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+AMOC,Alexandria Mineral Oils Company,Energy,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ARCC,Arabian Cement Company,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ASPI,Aspire Capital Holding for Financial Investments,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+BINV,B Investments Holding,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+BTFH,Beltone Holding,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+CCAP,Qalaa Holdings,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+CICH,CI Capital Holding for Financial Investments,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+CIEB,Credit Agricole Egypt,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+CIRA,Cairo for Investment and Real Estate Development,Education,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+CLHO,Cleopatra Hospitals Group,Healthcare,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+COMI,Commercial International Bank Egypt,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+DELTA,Delta Sugar,Consumer Staples,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EAST,Eastern Company,Consumer Staples,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EDBE,Export Development Bank of Egypt,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EFID,Edita Food Industries,Consumer Staples,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EFIH,E-Finance for Digital and Financial Investments,Financial Technology,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EGAL,Egypt Aluminum,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EGCH,Egyptian Chemical Industries Kima,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EGTS,Egyptian Resorts Company,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EKHO,Egypt Kuwait Holding,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+EMFD,Emaar Misr for Development,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ESRS,Ezz Steel,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ETEL,Telecom Egypt,Telecommunications,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+FAIT,Faisal Islamic Bank of Egypt,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+FWRY,Fawry for Banking Technology and Electronic Payment,Financial Technology,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+GBCO,GB Corp,Consumer Discretionary,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+GDWA,Gadwa for Industrial Development,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+HDBK,Housing and Development Bank,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+HELI,Heliopolis Company for Housing and Development,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+HRHO,EFG Holding,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ISPH,Ibnsina Pharma,Healthcare,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+JUFO,Juhayna Food Industries,Consumer Staples,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+MASR,Madinet Masr for Housing and Development,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+MCQE,Misr Cement Qena,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+MFPC,Misr Fertilizers Production Company Mopco,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+MTIE,MM Group for Industry and International Trade,Consumer Discretionary,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+OCDI,Six of October Development and Investment Sodic,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+OFH,Orascom Financial Holding,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+OIH,Orascom Investment Holding,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ORAS,Orascom Construction,Industrials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ORHD,Orascom Development Egypt,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+ORWE,Oriental Weavers,Consumer Discretionary,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+PHAR,Egyptian International Pharmaceutical Industries,Healthcare,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+PHDC,Palm Hills Developments,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+PIOH,Pioneers Holding Company for Financial Investment,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+PRDC,Pioneers Properties for Urban Development,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+QNBA,QNB Alahli,Banks,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+RAYA,Raya Holding for Financial Investments,Financial Services,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+RMDA,Tenth of Ramadan for Pharmaceutical Industries Rameda,Healthcare,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+SKPC,Sidi Kerir Petrochemicals,Materials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+SPMD,Speed Medical,Healthcare,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+SWDY,Elsewedy Electric,Industrials,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+TALM,Taaleem Management Services,Education,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.
+TMGH,Talaat Moustafa Group Holding,Real Estate,Manual static mapping from existing company names; UNKNOWN retained when not confidently classified.

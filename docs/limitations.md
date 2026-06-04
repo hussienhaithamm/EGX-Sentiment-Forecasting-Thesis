@@ -1,13 +1,10 @@
 # Limitations
 
-- Sentiment-only features are weak predictors of short-horizon EGX returns.
-- Balanced accuracy remains close to random for most ticker/horizon combinations.
-- OIH has only 302 labeled articles, which limits signal stability.
-- Event keywords are broad; many Mubasher articles match at least one event term, so event filtering is not very selective.
-- AraBERT and FinBERT may not fully capture Egyptian market-specific language, abbreviations, or sarcasm.
-- The project intentionally excludes OHLCV and technical indicators from the main benchmark; this isolates sentiment, but it also makes the forecasting task harder.
-- The final multi-horizon run uses a 250-row refit cadence for runtime practicality. It remains chronological, but exact metrics may differ from a more frequent refit cadence.
-- Return correlations are small and unstable, so regression outputs should not be interpreted as economically strong forecasts.
-- Phase 7 overfitting checks rejected the raw highest event-weighted accuracy result as the accepted final model; the validity-passing candidate is weaker and still close to random on balanced accuracy.
-
-Recommended thesis framing: sentiment-only forecasting provides limited evidence of predictive value, but the results do not support using news sentiment as a standalone trading signal for the selected EGX stocks.
+- Mubasher is a single news provider.
+- Off-the-shelf sentiment classifiers are comparative baselines, not EGX-specific human-validated sentiment models.
+- Corporate-action transition states are documented and validated, but archival exchange metadata remains a research maintenance burden.
+- The pipeline deliberately excludes price-derived predictors, so results quantify sentiment-only value rather than trading-system performance.
+- News coverage is still uneven across firms and sectors, even after point-in-time scoping.
+- Raw accuracy can be inflated by majority-class behavior; balanced accuracy and baseline deltas remain the primary evidence.
+- Historical EGX30 constituent weights are not available in the reproducible dataset, so index-weighted sentiment is not reported.
+- Abstention/high-signal results depend on coverage and threshold design and should not be compared to full-session accuracy without the reported coverage.

@@ -306,6 +306,13 @@ def align_enhanced_sentiment_features_to_prices(
     ticker = str(prices["Ticker"].iloc[0])
     price_dates = pd.Index(prices["Date"])
     base_columns = _enhanced_base_columns()
+    if not daily_features.empty:
+        extra_columns = sorted(
+            column
+            for column in daily_features.columns
+            if column not in {"Ticker", "Date"} and column not in base_columns
+        )
+        base_columns.extend(extra_columns)
 
     if daily_features.empty:
         start_date = price_dates.min()

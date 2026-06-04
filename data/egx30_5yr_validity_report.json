@@ -1,0 +1,121 @@
+{
+  "status": "PASS",
+  "registry": {
+    "status": "PASS",
+    "start_date": "2021-04-21",
+    "end_date": "2026-04-20",
+    "interval_count": 12,
+    "unique_company_count": 57,
+    "intervals": [
+      {
+        "date_from": "2021-04-21",
+        "date_to": "2021-07-31",
+        "company_count": 31,
+        "transition_allowance": {
+          "date_from": "2021-04-21",
+          "date_to": "2021-07-31",
+          "expected_company_count": 31,
+          "reason": "Orascom Investment Holding demerger transition: OIH and OFH were both represented."
+        }
+      },
+      {
+        "date_from": "2021-08-01",
+        "date_to": "2021-10-12",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2021-10-13",
+        "date_to": "2022-01-31",
+        "company_count": 32,
+        "transition_allowance": {
+          "date_from": "2021-10-13",
+          "date_to": "2022-01-31",
+          "expected_company_count": 32,
+          "reason": "Pioneers Holding demerger transition: the three successor securities temporarily entered EGX30."
+        }
+      },
+      {
+        "date_from": "2022-02-01",
+        "date_to": "2022-07-31",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2022-08-01",
+        "date_to": "2023-01-31",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2023-02-01",
+        "date_to": "2023-07-31",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2023-08-01",
+        "date_to": "2024-01-31",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2024-02-01",
+        "date_to": "2024-07-31",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2024-08-01",
+        "date_to": "2025-02-01",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2025-02-02",
+        "date_to": "2025-08-02",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2025-08-03",
+        "date_to": "2026-01-31",
+        "company_count": 30,
+        "transition_allowance": null
+      },
+      {
+        "date_from": "2026-02-01",
+        "date_to": "2026-04-20",
+        "company_count": 30,
+        "transition_allowance": null
+      }
+    ]
+  },
+  "scoped_article_rows_checked": 9564,
+  "panel_count": 18,
+  "target_rows_checked": 18666,
+  "lag_rows_checked": 18666,
+  "walk_forward_prediction_rows_checked": 7290,
+  "metric_rows_checked": 36,
+  "easy_win_reports": {
+    "status": "PASS",
+    "checked_files": [
+      "egx30_company_coverage.csv",
+      "egx30_yearly_coverage.csv",
+      "egx30_daily_coverage.csv",
+      "egx30_baseline_comparison.csv",
+      "egx30_abstention_experiment.csv"
+    ]
+  },
+  "assertions": [
+    "point_in_time_registry_continuous",
+    "only_documented_transition_states_allowed",
+    "inactive_company_articles_excluded",
+    "cross_company_articles_deduplicated",
+    "egx30_closes_used_for_targets_only",
+    "daily_sentiment_features_shifted_by_at_least_one_calendar_day",
+    "walk_forward_history_excludes_unavailable_labels",
+    "saved_accuracy_balanced_accuracy_f1_match_predictions",
+    "easy_win_reports_have_expected_columns_when_generated"
+  ]
+}

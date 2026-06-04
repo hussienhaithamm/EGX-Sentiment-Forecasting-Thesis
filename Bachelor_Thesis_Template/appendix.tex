@@ -34,16 +34,20 @@
   \item[GPU] Graphics Processing Unit.
   \item[GRU] Gated Recurrent Unit.
   \item[GUC] German University in Cairo.
+  \item[HHI] Herfindahl-Hirschman Index.
   \item[LLM] Large Language Model.
   \item[LSTM] Long Short-Term Memory.
   \item[MAE] Mean Absolute Error.
   \item[MAPE] Mean Absolute Percentage Error.
   \item[MARBERT] Multi-dialect Arabic Bidirectional Encoder Representations from Transformers.
+  \item[MCC] Matthews Correlation Coefficient.
   \item[MLM] Masked Language Modeling.
   \item[MLP] Multilayer Perceptron.
   \item[NARX] Nonlinear Autoregressive Exogenous model.
   \item[NLP] Natural Language Processing.
+  \item[OHLCV] Open, High, Low, Close, Volume.
   \item[OIH] Orascom Investment Holding.
+  \item[PIT] Point-in-Time.
   \item[RMSE] Root Mean Squared Error.
   \item[RQ] Research Question.
   \item[SA-DLSTM] Sentiment-Aware Deep Long Short-Term Memory model.
@@ -59,5 +63,52 @@
 \listoffigures
 \phantomsection
 \addcontentsline{toc}{section}{List of Figures}
-% \listoftables
-% \addcontentsline{toc}{section}{List of Tables}
+\clearpage
+\listoftables
+\phantomsection
+\addcontentsline{toc}{section}{List of Tables}
+
+\chapter{Reproducibility Notes}
+
+The main runner is \codepath{scripts/run_egx30_5yr_pipeline.py}. It rebuilds the point-in-time registry, prepares processed news, runs the EGX30 sentiment-only evaluation, executes validity checks, generates research summaries, checks thesis artifacts, and compiles the thesis.
+
+The main evaluation and report scripts are listed below:
+
+\begin{pathblock}
+\pathrow{scripts/run_egx30_5yr_evaluation.py}
+\pathrow{scripts/run_egx30_5yr_validity_checks.py}
+\pathrow{scripts/run_easy_win_validity_extensions.py}
+\pathrow{scripts/write_egx30_5yr_research_summary.py}
+\end{pathblock}
+
+The compact reports are written under \codepath{reports/}.
+
+The central reproducibility command is:
+\begin{pathblock}
+\pathrow{PYTHONPATH=src python3 scripts/run_egx30_5yr_pipeline.py --skip-scrape}
+\end{pathblock}
+
+The \texttt{--skip-scrape} flag reuses the local scrape cache. Removing it resumes the archival scraper, but no new scraping is required to reproduce the reported thesis results from the existing prepared artifacts.
+
+\section*{Repository Report Pointers}
+\addcontentsline{toc}{section}{Repository Report Pointers}
+
+The full baseline comparison is stored in:
+\begin{pathblock}
+\pathrow{reports/egx30_baseline_comparison.csv}
+\end{pathblock}
+
+The coverage audit, abstention experiment, sector scaffold, and weighting availability report are stored in:
+\begin{pathblock}
+\pathrow{reports/egx30_coverage_audit.md}
+\pathrow{reports/egx30_abstention_experiment.md}
+\pathrow{reports/egx30_sector_feature_ablation.md}
+\pathrow{reports/egx30_weighting_ablation.md}
+\end{pathblock}
+
+The main validity report, direction metrics, and selected model settings are stored in:
+\begin{pathblock}
+\pathrow{data/egx30_5yr_validity_report.json}
+\pathrow{data/egx30_5yr_universe_metrics.csv}
+\pathrow{outputs/egx30_5yr_universe_experiments/metrics/direction_metrics.csv}
+\end{pathblock}

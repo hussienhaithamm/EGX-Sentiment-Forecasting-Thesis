@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import logging
+import random
 import re
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 from urllib.parse import urljoin
 
 import requests
@@ -64,9 +66,13 @@ class AlMobasherScraper:
         config: Optional[AlMobasherScraperConfig] = None,
         tickers: Optional[Sequence[str]] = None,
         languages: Sequence[str] = ("en", "ar"),
+        companies: Optional[Mapping[str, TargetCompany]] = None,
+        persist_combined_on_progress: bool = True,
     ):
         self.config = config or AlMobasherScraperConfig.from_env()
-        self.tickers = [ticker.upper() for ticker in (tickers or TARGET_COMPANIES.keys())]
+        self.companies = dict(companies or TARGET_COMPANIES)
+        self.persist_combined_on_progress = persist_combined_on_progress
+        self.tickers = [ticker.upper() for ticker in (tickers or self.companies.keys())]
         self.languages = [language.lower() for language in languages]
         self.output_dir = self.config.output_dir
         self.log_dir = self.config.log_dir
@@ -83,11 +89,13 @@ class AlMobasherScraper:
         self._failed_articles_path().touch(exist_ok=True)
 
     def _build_logger(self) -> logging.Logger:
-        logger = logging.getLogger("news_pipeline.al_mobasher")
+        logger = logging.getLogger(f"news_pipeline.al_mobasher.{id(self)}")
         logger.setLevel(getattr(logging, self.config.log_level, logging.INFO))
         logger.propagate = False
 
         if logger.handlers:
+            for handler in logger.handlers:
+                handler.close()
             logger.handlers.clear()
 
         formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
@@ -104,11 +112,10 @@ class AlMobasherScraper:
     def _build_session(self) -> requests.Session:
         session = requests.Session()
         retry = Retry(
-            total=self.config.max_retries,
-            connect=self.config.max_retries,
-            read=self.config.max_retries,
-            backoff_factor=self.config.backoff_factor,
-            status_forcelist=(403, 429, 500, 502, 503, 504),
+            total=0,
+            connect=0,
+            read=0,
+            status=0,
             allowed_methods=("GET",),
             raise_on_status=False,
         )
@@ -125,9 +132,18 @@ class AlMobasherScraper:
         return session
 
     def _request(self, url: str) -> requests.Response:
+        required_delay = self.config.request_delay_seconds
+        if (
+            self.config.request_delay_min_seconds is not None
+            and self.config.request_delay_max_seconds is not None
+        ):
+            required_delay = random.uniform(
+                self.config.request_delay_min_seconds,
+                self.config.request_delay_max_seconds,
+            )
         elapsed = time.monotonic() - self._last_request_started_at
-        if elapsed < self.config.request_delay_seconds:
-            time.sleep(self.config.request_delay_seconds - elapsed)
+        if elapsed < required_delay:
+            time.sleep(required_delay - elapsed)
 
         self._last_request_started_at = time.monotonic()
         response = self.session.get(url, timeout=self.config.request_timeout_seconds)
@@ -510,8 +526,69 @@ class AlMobasherScraper:
     def _ticker_output_path(self, ticker: str) -> Path:
         return self.output_dir / f"{ticker}.jsonl"
 
+    def _ticker_progress_path(self, ticker: str) -> Path:
+        return self.output_dir / f"{ticker}.progress.json"
+
+    def _load_completed_languages(self, ticker: str) -> set[str]:
+        path = self._ticker_progress_path(ticker)
+        if not path.exists():
+            return set()
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("start_date") != self.config.start_date or payload.get("end_date") != self.config.end_date:
+            return set()
+        return {str(value) for value in payload.get("completed_languages", [])}
+
+    def _mark_language_complete(self, ticker: str, language: str) -> None:
+        path = self._ticker_progress_path(ticker)
+        completed = self._load_completed_languages(ticker)
+        completed.add(language)
+        payload = {
+            "ticker": ticker,
+            "completed_languages": sorted(completed),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "start_date": self.config.start_date,
+            "end_date": self.config.end_date,
+        }
+        tmp_path = path.with_suffix(path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+        tmp_path.replace(path)
+
+    @staticmethod
+    def _record_publication_date(record: Dict) -> Optional[datetime]:
+        value = record.get("published_at") or record.get("publication_timestamp")
+        if not value:
+            return None
+        try:
+            return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except ValueError:
+            return None
+
+    def _record_is_within_window(self, record: Dict) -> bool:
+        published = self._record_publication_date(record)
+        if published is None:
+            return True
+        published_date = published.date()
+        if self.config.start_date and published_date < datetime.fromisoformat(self.config.start_date).date():
+            return False
+        if self.config.end_date and published_date > datetime.fromisoformat(self.config.end_date).date():
+            return False
+        return True
+
+    def _record_is_before_start(self, record: Dict) -> bool:
+        published = self._record_publication_date(record)
+        return bool(
+            published is not None
+            and self.config.start_date
+            and published.date() < datetime.fromisoformat(self.config.start_date).date()
+        )
+
     def _load_existing_records(self, ticker: str) -> Dict[Tuple[str, str], Dict]:
-        return load_existing_index(self._ticker_output_path(ticker))
+        records = load_existing_index(self._ticker_output_path(ticker))
+        return {
+            key: record
+            for key, record in records.items()
+            if self._record_is_within_window(record)
+        }
 
     def _get_listing_url(self, company: TargetCompany, language: str, page_number: int) -> str:
         base_url = _LANGUAGE_SETTINGS[language]["base_url"]
@@ -535,12 +612,13 @@ class AlMobasherScraper:
 
     def _persist_ticker_progress(self, ticker: str, records: Iterable[Dict]) -> None:
         write_jsonl_records(self._ticker_output_path(ticker), records)
-        self._persist_combined_news()
-        self._write_manifest()
+        if self.persist_combined_on_progress:
+            self._persist_combined_news()
+            self._write_manifest()
 
     def _persist_combined_news(self) -> None:
         merged_records: List[Dict] = []
-        for ticker in sorted(self.tickers):
+        for ticker in sorted(self.companies):
             merged_records.extend(load_jsonl_records(self._ticker_output_path(ticker)))
         write_jsonl_records(self.output_dir / "all_news.jsonl", merged_records)
 
@@ -557,10 +635,14 @@ class AlMobasherScraper:
         existing_records = self._load_existing_records(company.ticker)
         merged_records = dict(existing_records)
         stats = {"new_records": 0, "seen_records": 0, "failed_pages": 0, "failed_articles": 0}
+        completed_languages = self._load_completed_languages(company.ticker)
 
         for language in self.languages:
             if language not in _LANGUAGE_SETTINGS:
                 raise ValueError(f"Unsupported language: {language}")
+            if language in completed_languages and not self.config.force_rescrape:
+                self.logger.info("Skipping completed %s %s archive", company.ticker, language)
+                continue
 
             first_page_url = self._get_listing_url(company, language, 1)
             try:
@@ -589,6 +671,8 @@ class AlMobasherScraper:
             )
 
             seen_pages_in_a_row = 0
+            before_start_pages_in_a_row = 0
+            language_had_terminal_failure = False
             for page_number in range(1, page_count + 1):
                 if page_number == 1:
                     page_soup = first_soup
@@ -607,6 +691,7 @@ class AlMobasherScraper:
                             page_count=page_count,
                         )
                         stats["failed_pages"] += 1
+                        language_had_terminal_failure = True
                         self._persist_ticker_progress(company.ticker, merged_records.values())
                         continue
 
@@ -630,14 +715,21 @@ class AlMobasherScraper:
                         page_count=page_count,
                     )
                     stats["failed_pages"] += 1
+                    language_had_terminal_failure = True
                     self._persist_ticker_progress(company.ticker, merged_records.values())
                     continue
 
                 new_records_on_page = 0
+                dated_records_on_page = 0
+                before_start_records_on_page = 0
                 for entry in entries:
                     key = (entry.article_id, language)
                     if key in merged_records and not self.config.force_rescrape:
                         stats["seen_records"] += 1
+                        existing = merged_records[key]
+                        if self._record_publication_date(existing) is not None:
+                            dated_records_on_page += 1
+                            before_start_records_on_page += int(self._record_is_before_start(existing))
                         continue
 
                     try:
@@ -645,11 +737,16 @@ class AlMobasherScraper:
                     except Exception as exc:
                         self._record_failed_article(company, language, entry, exc)
                         stats["failed_articles"] += 1
+                        language_had_terminal_failure = True
                         continue
 
-                    merged_records[key] = record
-                    new_records_on_page += 1
-                    stats["new_records"] += 1
+                    if self._record_publication_date(record) is not None:
+                        dated_records_on_page += 1
+                        before_start_records_on_page += int(self._record_is_before_start(record))
+                    if self._record_is_within_window(record):
+                        merged_records[key] = record
+                        new_records_on_page += 1
+                        stats["new_records"] += 1
 
                 self._persist_ticker_progress(company.ticker, merged_records.values())
 
@@ -666,6 +763,27 @@ class AlMobasherScraper:
                 else:
                     seen_pages_in_a_row = 0
 
+                if (
+                    self.config.start_date
+                    and dated_records_on_page > 0
+                    and before_start_records_on_page == dated_records_on_page
+                ):
+                    before_start_pages_in_a_row += 1
+                    if before_start_pages_in_a_row >= self.config.stop_after_before_start_pages:
+                        self.logger.info(
+                            "Stopping %s %s after %s page(s) entirely before %s",
+                            company.ticker,
+                            language,
+                            before_start_pages_in_a_row,
+                            self.config.start_date,
+                        )
+                        break
+                else:
+                    before_start_pages_in_a_row = 0
+            if not language_had_terminal_failure:
+                self._mark_language_complete(company.ticker, language)
+                completed_languages.add(language)
+
         records = list(merged_records.values())
         self._persist_ticker_progress(company.ticker, records)
         self.logger.info(
@@ -679,15 +797,40 @@ class AlMobasherScraper:
         )
         return records
 
-    def run(self) -> Dict[str, List[Dict]]:
+    def _scrape_ticker_with_isolated_session(self, ticker: str) -> Tuple[str, List[Dict]]:
+        company = self.companies.get(ticker)
+        if company is None:
+            raise KeyError(f"Unsupported target ticker: {ticker}")
+        worker = AlMobasherScraper(
+            config=self.config,
+            tickers=[ticker],
+            languages=self.languages,
+            companies=self.companies,
+            persist_combined_on_progress=False,
+        )
+        records = worker.scrape_company(company)
+        return ticker, records
+
+    def run(self, *, workers: int = 1) -> Dict[str, List[Dict]]:
         """Scrape all requested target tickers and write outputs."""
 
         results: Dict[str, List[Dict]] = {}
-        for ticker in self.tickers:
-            company = TARGET_COMPANIES.get(ticker)
-            if company is None:
-                raise KeyError(f"Unsupported target ticker: {ticker}")
-            results[ticker] = self.scrape_company(company)
+        if workers <= 1:
+            for ticker in self.tickers:
+                company = self.companies.get(ticker)
+                if company is None:
+                    raise KeyError(f"Unsupported target ticker: {ticker}")
+                results[ticker] = self.scrape_company(company)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = {
+                    executor.submit(self._scrape_ticker_with_isolated_session, ticker): ticker
+                    for ticker in self.tickers
+                }
+                for future in as_completed(futures):
+                    ticker, records = future.result()
+                    results[ticker] = records
+                    self.logger.info("Worker completed %s (%s records)", ticker, len(records))
 
         self._persist_combined_news()
         self._write_manifest()
@@ -696,7 +839,7 @@ class AlMobasherScraper:
 
     def _build_manifest(self) -> Dict:
         summary = {}
-        for ticker in self.tickers:
+        for ticker in sorted(self.companies):
             records = load_jsonl_records(self._ticker_output_path(ticker))
             language_counts: Dict[str, int] = {}
             for record in records:
@@ -723,10 +866,15 @@ class AlMobasherScraper:
                 "output_dir": str(self.output_dir),
                 "request_timeout_seconds": self.config.request_timeout_seconds,
                 "request_delay_seconds": self.config.request_delay_seconds,
+                "request_delay_min_seconds": self.config.request_delay_min_seconds,
+                "request_delay_max_seconds": self.config.request_delay_max_seconds,
                 "max_retries": self.config.max_retries,
                 "backoff_factor": self.config.backoff_factor,
                 "max_pages_per_language": self.config.max_pages_per_language,
                 "stop_after_seen_pages": self.config.stop_after_seen_pages,
+                "stop_after_before_start_pages": self.config.stop_after_before_start_pages,
+                "start_date": self.config.start_date,
+                "end_date": self.config.end_date,
                 "force_rescrape": self.config.force_rescrape,
                 "include_raw_html": self.config.include_raw_html,
             },
@@ -767,6 +915,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional output directory override.",
     )
+    parser.add_argument("--workers", type=int, default=1, help="Bounded parallel company workers.")
     return parser
 
 
@@ -785,7 +934,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         config = dataclass_replace(config, output_dir=Path(args.output_dir))
 
     scraper = AlMobasherScraper(config=config, tickers=args.tickers, languages=args.languages)
-    scraper.run()
+    scraper.run(workers=args.workers)
     return 0
 
 
