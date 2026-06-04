@@ -1,0 +1,57 @@
+{
+  "direction_repo_path": "/tmp/EGX-Direction-Forecasting-experiment",
+  "data_dir": "data",
+  "daily_sentiment_path": "outputs/egx30_sentiment_only_experiments/features/h5_base_pipeline_market_mood_bilingual_daily_features.csv",
+  "output_dir": "outputs/egx30_historical_sentiment_feature_experiment",
+  "egx30_price_source": "mubasher-ohlcv",
+  "start_date": "2016-04-21",
+  "end_date": "2026-04-20",
+  "tickers": [
+    "EGX30"
+  ],
+  "models": [
+    "xgboost"
+  ],
+  "nn_epochs": 50,
+  "past_window": 10,
+  "future_window": 5,
+  "test_size": 0.2,
+  "gap": null,
+  "keep_unobservable_terminal_targets": false,
+  "direction_repo_metadata": {
+    "repo_path": "/tmp/EGX-Direction-Forecasting-experiment",
+    "remote_origin": "https://github.com/anastamerr/EGX-Direction-Forecasting",
+    "commit": "4a3652bda8cfd5e05809fe7c38345964c93e688c",
+    "branch": "main",
+    "status_short": ""
+  },
+  "sentiment_base_columns": [
+    "combined_article_count",
+    "combined_scored_count",
+    "combined_sentiment_weighted_mean",
+    "combined_sentiment_weighted_volume",
+    "combined_sentiment_polarity_share",
+    "combined_confidence_mean",
+    "combined_relevance_weight_mean",
+    "en_sentiment_weighted_mean",
+    "ar_sentiment_weighted_mean",
+    "en_ar_sentiment_spread",
+    "en_share_of_articles",
+    "ar_share_of_articles"
+  ],
+  "price_frame_rows": {
+    "EGX30": 2214
+  },
+  "price_frame_columns": {
+    "EGX30": [
+      "Date",
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "Ticker"
+    ]
+  },
+  "egx30_price_source_url": "https://static.mubasher.info/File.MubasherCharts/File.Historical_Index_Charts_Dir/39d67d8ab4f4c10bf22aa353e27879133c.csv"
+}

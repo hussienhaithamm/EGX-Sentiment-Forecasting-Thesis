@@ -1,172 +1,185 @@
 \chapter{Methodology}
 \label{chap:methodology}
 
-This chapter explains how the thesis is designed and what was built. It starts with the overall research design and the pipeline, then covers the data sources, article preparation, bilingual sentiment scoring, the formal confidence filter and daily aggregation rules, event-aware variants, target construction, the forecasting setup, evaluation metrics, leakage control, and the four auxiliary experiments. Numbered equations are used wherever the pipeline behaviour needs to be pinned down precisely, and each one is referenced in the text around it.
+This chapter explains the method used in the thesis. The motivation is to isolate bilingual financial-news sentiment before adding any price-based information, so the method starts from historical EGX30 membership, collects bilingual company-linked news, routes text to suitable sentiment models, builds daily market mood, constructs EGX30 direction labels, and evaluates the result with walk-forward validation.
 
-\section{Research Design}
+\section{Overall Pipeline Architecture}
 
-This thesis is carried out as an industrial bachelor project between the German University in Cairo and Robin, the data-science arm of Beltone Holding. The original project brief asks whether sentiment information provides additional predictive value beyond historical market data in financial forecasting. The practical work evolves in two stages.
+The method isolates the news signal before adding any price-based information. Historical EGX30 closes are used only after feature construction, and only to define future direction labels. Figure~\ref{fig:pipeline_architecture} shows the end-to-end flow.
 
-The first stage extends an existing EGX direction-forecasting system that already uses historical prices, engineered technical indicators, and machine-learning models. In exploratory development, the addition of a sentiment signal appears to improve directional accuracy by a small absolute margin. That result is useful as motivation, but it does not isolate the value of sentiment itself because the underlying price-based model is already strong and heavily feature-engineered.
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+stage/.style={draw, rounded corners, align=center, minimum width=2.9cm, minimum height=0.95cm, font=\scriptsize},
+arrow/.style={-{Latex[length=2mm]}, thick},
+node distance=0.75cm and 0.65cm
+]
+\node[stage] (registry) {Point-in-time\\EGX30 registry};
+\node[stage, right=of registry] (articles) {Bilingual\\Mubasher articles};
+\node[stage, right=of articles] (clean) {Cleaning and\\deduplication};
+\node[stage, right=of clean] (route) {Language\\routing};
 
-The second stage, which forms the core reproducible contribution of this thesis, reframes the problem as a sentiment-only benchmark. The goal is a narrower and more defensible question: if price-derived predictors are removed, how much information does bilingual financial-news sentiment alone provide about future stock direction and return? This design makes the interpretation cleaner. If the sentiment-only benchmark is weak, the study can report that result directly. If it is moderately useful, later integration with price-based systems becomes easier to justify.
+\node[stage, below=of route] (score) {Sentiment scoring\\FinBERT / AraBERT\\CAMeLBERT};
+\node[stage, left=of score] (active) {Active-membership\\filtering};
+\node[stage, left=of active] (company) {Daily company\\sentiment};
+\node[stage, left=of company] (market) {Equal-weight\\market mood};
 
-The final methodology evaluates three complementary ideas. The first is bilingual sentiment extraction from Arabic and English financial news. The second is leakage-safe alignment of article-derived features to later trading dates. The third is the comparison of all-news, event-only, and event-weighted sentiment representations. Figure~\ref{fig:methodology_pipeline} summarises the end-to-end workflow adopted in the thesis, from bilingual news collection to leakage-safe evaluation.
+\node[stage, below=of market] (features) {Lagged sentiment-only\\feature panel};
+\node[stage, right=of features] (labels) {EGX30 direction\\labels};
+\node[stage, right=of labels] (eval) {Walk-forward\\evaluation};
+\node[stage, right=of eval] (audit) {Validity and\\robustness audit};
 
-\includefig{0.96}{methodology_pipeline.png}{End-to-end methodology for the sentiment-only EGX forecasting benchmark.}{fig:methodology_pipeline}
+\draw[arrow] (registry) -- (articles);
+\draw[arrow] (articles) -- (clean);
+\draw[arrow] (clean) -- (route);
+\draw[arrow] (route) -- (score);
+\draw[arrow] (score) -- (active);
+\draw[arrow] (active) -- (company);
+\draw[arrow] (company) -- (market);
+\draw[arrow] (market) -- (features);
+\draw[arrow] (features) -- (labels);
+\draw[arrow] (labels) -- (eval);
+\draw[arrow] (eval) -- (audit);
+\end{tikzpicture}%
+}
+\caption{Overall pipeline architecture for the EGX30 sentiment-only study.}
+\label{fig:pipeline_architecture}
+\end{figure}
 
-\section{Study Universe and Data Sources}
+The ordering in Figure~\ref{fig:pipeline_architecture} is important. Articles are filtered against the point-in-time universe before aggregation, and sentiment features are lagged before they are aligned to trading dates. This prevents same-day information and future labels from entering the prediction procedure.
 
-The empirical study focuses on three Egyptian Exchange tickers: Commercial International Bank, also written as CIB or COMI; Talaat Moustafa Group, also written as TMG or TMGH; and Orascom Investment Holding, also written as OIH. These tickers are selected because they are actively discussed in local financial coverage and provide a mix of relatively higher-coverage and lower-coverage cases.
+Algorithm~\ref{alg:sentiment_panel} summarizes the construction of the final sentiment feature panel. The important constraint is that prices enter only after feature construction, and only to define the direction labels.
 
-The final reproducible benchmark uses Mubasher as the sole news source because it offers both Arabic and English listing pages tied to specific EGX company pages. Restricting the thesis dataset to one source keeps crawling behaviour, ticker linkage, and article structure consistent across the study. Historical market prices are loaded from local CSV files stored in the project repository, with external download used only as a fallback if a local file is missing.
+\begin{algorithm}[H]
+\caption{Sentiment Feature Panel Construction}
+\label{alg:sentiment_panel}
+\small
+\textbf{Input:} point-in-time EGX30 registry, article table, sentiment scores, trading calendar, EGX30 close series for labels only, and forecast horizons $H=\{1,3,5\}$.\\
+\textbf{Output:} lagged sentiment-only feature panels and direction labels.
+\begin{enumerate}
+  \setlength{\itemsep}{0.15em}
+  \item Normalize article timestamps to Cairo local dates.
+  \item Remove articles outside the study period.
+  \item Deduplicate repeated article records.
+  \item Keep an article only when its linked company is active in EGX30 on the article date.
+  \item Route text by language.
+  \item Score English text with FinBERT and Arabic text with AraBERT or CAMeLBERT.
+  \item Aggregate scored articles to company-day sentiment.
+  \item Aggregate active company-day sentiment to equal-weight daily market mood.
+  \item Build sentiment-side coverage and count features.
+  \item Shift all sentiment features by at least one calendar day.
+  \item Align shifted features to trading dates.
+  \item Construct EGX30 direction labels from future closes only.
+  \item Remove all price-derived fields from the model matrix.
+  \item Return the feature panel for walk-forward evaluation.
+\end{enumerate}
+\end{algorithm}
 
-The raw scrape and the cleaned article counts differ because the final dataset applies confidence filtering, text cleaning, language normalisation, and duplicate removal. Table~\ref{tab:dataset_counts} summarises the final bilingual article coverage used in the thesis.
+The output of Algorithm~\ref{alg:sentiment_panel} is the only input used by the forecasting models. Because all sentiment features are shifted before trading-date alignment, the model cannot use same-day or future information.
+
+\section{Point-in-Time EGX30 Universe}
+
+Using the current EGX30 list for past dates would introduce survivorship bias. The study therefore reconstructs the active constituent set from 21 April 2021 through 20 April 2026. The registry contains 12 continuous intervals and 57 historical company identities.
+
+Table~\ref{tab:pit_registry} reports the intervals used by the final study. Two non-30 states are retained because they correspond to documented corporate-action transition periods. The registry validator checks continuity, rejects gaps and overlaps, and permits only those documented exceptions.
 
 \begin{table}[ht]
 \centering
-\caption{Raw scraped records and final sentiment-labeled article counts used in the thesis benchmark.}
-\label{tab:dataset_counts}
+\caption{Point-in-time EGX30 registry intervals and active company counts.}
+\label{tab:pit_registry}
 \small
-\begin{tabular}{lrrrr}
+\begin{tabular}{lll}
 \toprule
-Ticker & Raw records & Final articles & English & Arabic \\
+From & To & Active companies \\
 \midrule
-CIB & 1064 & 1013 & 310 & 703 \\
-TMG & 616 & 604 & 189 & 415 \\
-OIH & 699 & 304 & 87 & 217 \\
-\midrule
-Total & 2379 & 1921 & 586 & 1335 \\
+2021-04-21 & 2021-07-31 & 31 \\
+2021-08-01 & 2021-10-12 & 30 \\
+2021-10-13 & 2022-01-31 & 32 \\
+2022-02-01 & 2022-07-31 & 30 \\
+2022-08-01 & 2023-01-31 & 30 \\
+2023-02-01 & 2023-07-31 & 30 \\
+2023-08-01 & 2024-01-31 & 30 \\
+2024-02-01 & 2024-07-31 & 30 \\
+2024-08-01 & 2025-02-01 & 30 \\
+2025-02-02 & 2025-08-02 & 30 \\
+2025-08-03 & 2026-01-31 & 30 \\
+2026-02-01 & 2026-04-20 & 30 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The same distribution is visualised in Figure~\ref{fig:dataset_language_distribution}. The figure shows the language imbalance for all three tickers and confirms that OIH has the smallest total article count overall. This asymmetry matters because a sparse text history makes any sentiment-derived predictor less stable and increases the variance of the final estimates.
+\section{Bilingual Article Collection and Preprocessing}
 
-\includefig{0.82}{dataset_language_distribution.png}{Final sentiment-labeled article counts by ticker and language.}{fig:dataset_language_distribution}
+The news corpus is built from Arabic and English Mubasher company pages linked to the historical EGX30 constituent union. Each article is normalized to a Cairo local publication date. Rows outside the study period are removed, duplicate article records are collapsed, and article text is cleaned before sentiment scoring.
 
-\section{News Collection and Article Preparation}
+Preprocessing also preserves audit fields such as source language, detected language, article identifier, URL, company ticker, and publication timestamp. These fields make the final corpus reproducible and support later checks for membership validity and cross-company duplication.
 
-The news pipeline begins by scraping Mubasher listing pages separately for Arabic and English. For each ticker-language pair, the crawler collects article identifiers, URLs, titles, summaries, and article bodies. The crawler is incremental and retry-aware so that interrupted collection can be resumed without restarting the archive.
+\section{Sentiment Scoring}
 
-Collected articles pass through a preparation stage that standardises company references and removes low-quality or duplicated records. The preparation stage maps all company name variants to a single reference identity, normalises timestamps to Cairo local time, cleans Arabic and English text, removes very short or duplicated records, and filters weak entity matches. The result is a sentiment-ready bilingual article table whose rows correspond to distinct company-linked news items.
+The scoring step routes English articles to FinBERT and Arabic articles to Arabic transformer encoders. The main Arabic route uses AraBERT, and the comparison route uses CAMeLBERT. The English route is kept fixed so that differences between the two bilingual sentiment sources mainly reflect the Arabic encoder choice.
 
-Article relevance is then represented explicitly rather than assumed. A direct article contains the company alias in the title. A contextual article contains the alias in the body but not in the title. An indirect article is linked through weaker alias evidence. A stock-page-only article appears on the company page without stronger textual support. These categories are converted into weights so that strong company references contribute more than weak ones when daily sentiment features are aggregated.
-
-\section{Bilingual Sentiment Extraction}
-
-After article preparation, sentiment is scored using separate models for English and Arabic. English articles are routed to FinBERT \cite{araci2019finbert}, while Arabic articles are routed to an AraBERT-based sentiment route \cite{antoun2020arabert}. The reason for routing by language instead of forcing both languages through one shared model is methodological. The literature reviewed in Chapter~\ref{chap:related} shows that domain-specific financial English models and Arabic-specialised language models are both more defensible than generic multilingual sentiment tools for their respective settings.
-
-For each article, the sentiment layer stores the detected language, the model route, the predicted label, the class probabilities, a model-confidence estimate, and a continuous sentiment score. The article-level sentiment contribution is then weighted by both ticker-match confidence and model confidence. This design downweights weak ticker matches and low-confidence predictions before any daily aggregation takes place.
-
-Using off-the-shelf transformer models is a practical choice, not a claim that they are the best fit for Egyptian financial language. The goal is to find out whether a bilingual sentiment signal exists at all under a tight benchmark. If it does, later work can fine-tune these models on Arabic and English financial corpora.
-
-\section{Confidence Filtering and Daily Sentiment Aggregation}
-
-Article-level predictions are converted into time-series features through two formal steps: an entity-match confidence filter, then a confidence-weighted daily aggregation.
-
-\paragraph{Entity-match confidence filter.}
-Each candidate article $i$ carries a categorical ticker-match confidence $c_i \in \{\text{low}, \text{medium}, \text{high}\}$ produced by the matcher in \texttt{src/news\_pipeline}. Let $\mathrm{rank}(\cdot)$ assign $\mathrm{rank}(\text{low})=0$, $\mathrm{rank}(\text{medium})=1$, $\mathrm{rank}(\text{high})=2$. Article $i$ is retained for daily aggregation if and only if
+For article $i$, let $s_i$ be the continuous sentiment score and $w_i$ be the article weight from relevance and confidence. Equation~\ref{eq:market_article_weight} defines the weighted article contribution:
 \begin{equation}
-\mathrm{rank}(c_i) \geq \mathrm{rank}(\tau), \quad \tau = \text{medium},
-\label{eq:confidence_filter}
+q_i = s_i w_i.
+\label{eq:market_article_weight}
 \end{equation}
-where the threshold $\tau$ is taken from the saved benchmark configuration\footnote{Default \texttt{min\_match\_confidence} in \texttt{SentimentOnlyForecastConfig} inside \texttt{src/egx\_direction/sentiment\_only\_pipeline.py}.}. Equivalent to (\ref{eq:confidence_filter}), low-confidence matches are dropped before any sentiment score is aggregated.
+This contribution is still a text-derived quantity. It does not use prices, returns, or trading volume.
 
-\paragraph{Article weighting.}
-Each retained article $i$ contributes a non-negative aggregation weight
+\section{Market-Mood Feature Construction}
+
+Article sentiment is first aggregated at the company-day level. For company $c$ on calendar day $d$, Equation~\ref{eq:company_sentiment} defines the daily company signal:
 \begin{equation}
-w_i = w^{\text{rel}}_{r(i)} \cdot w^{\text{match}}_{c_i} \cdot p_i \cdot \mathbf{1}[\text{is\_scored}_i = 1],
-\label{eq:article_weight}
+S_{c,d} = \frac{\sum_{i \in A_{c,d}} q_i}{\sum_{i \in A_{c,d}} w_i},
+\label{eq:company_sentiment}
 \end{equation}
-where $r(i) \in \{\text{direct},\text{contextual},\text{indirect},\text{stock\_page\_only}\}$ is the entity-relevance label of article $i$ and $p_i \in [0,1]$ is the model confidence for the predicted sentiment class. The fixed relevance and match weights are $w^{\text{rel}} = (1.00, 0.85, 0.65, 0.45)$ and $w^{\text{match}} = (0.60, 0.80, 1.00)$ for $c_i \in (\text{low}, \text{medium}, \text{high})$. After the filter in (\ref{eq:confidence_filter}), only $c_i \in \{\text{medium}, \text{high}\}$ contribute to (\ref{eq:article_weight}).
+where $A_{c,d}$ is the set of scored articles linked to company $c$ on day $d$. If a company has no scored article on that day, its sentiment contribution is set to zero for equal-weight market aggregation.
 
-\paragraph{Article sign.}
-The article-level sign $s_i$ derives from the predicted sentiment label $\ell_i$ as
+For the active EGX30 constituent set $C_d$, Equation~\ref{eq:pit_market_mood} gives the daily market-mood feature:
 \begin{equation}
-s_i =
-\begin{cases}
-+1, & \ell_i = \text{positive} \\
--1, & \ell_i = \text{negative} \\
-\phantom{+}0, & \ell_i = \text{neutral}
-\end{cases}
-\label{eq:article_sign}
+M_d = \frac{1}{|C_d|} \sum_{c \in C_d} S_{c,d}.
+\label{eq:pit_market_mood}
 \end{equation}
+This equal-weight design prevents heavily covered companies from dominating the index-level signal. Coverage counts, language counts, and constituent coverage ratios are retained as sentiment-side features because they describe the availability of the news signal.
 
-\paragraph{Daily weighted sentiment.}
-For ticker $s$ and source calendar day $d-1$, the daily weighted sentiment is
-\begin{equation}
-S_{s,d} =
-\begin{cases}
-\dfrac{\sum_{i \in \mathcal{A}_{s,d-1}} s_i \cdot w_i}{\sum_{i \in \mathcal{A}_{s,d-1}} w_i}, & \text{if } \sum_{i \in \mathcal{A}_{s,d-1}} w_i > 0 \\
-0, & \text{otherwise (missingness flag set to }1)
-\end{cases}
-\label{eq:daily_aggregation}
-\end{equation}
-where $\mathcal{A}_{s,d-1}$ is the set of retained articles linked to ticker $s$ whose Cairo-local publication date equals $d-1$. The window therefore lags the trading date $d$ by one calendar day so that no same-day article is seen at prediction time. This corresponds to the configured value $\texttt{sentiment\_lag\_calendar\_days}=1$ in the saved \texttt{run\_config.json} of the sentiment-stock-impact study and to \texttt{lag\_strategy=previous\_day} (one-day shift) in the news-pipeline aggregator.
+All daily sentiment features are shifted by at least one calendar day before alignment to trading dates. News observed on calendar day $d$ can therefore affect a prediction no earlier than the next available trading session.
 
-\paragraph{Daily missingness handling.}
-Equation (\ref{eq:daily_aggregation}) sets $S_{s,d} = 0$ when the denominator vanishes. The pipeline also records a binary \emph{article\_has\_news} indicator so that downstream models can distinguish a genuine zero-sentiment reading from a no-article day. Rolling windows and recency indicators derived later in the pipeline are computed on the daily series obtained from (\ref{eq:daily_aggregation}) after the one-day shift in (\ref{eq:article_weight}) and (\ref{eq:daily_aggregation}).
+\section{EGX30 Target Construction}
 
-Three language views are retained throughout the experiments: an English-only view ($\mathcal{A}^{\text{en}}_{s,d-1}$), an Arabic-only view ($\mathcal{A}^{\text{ar}}_{s,d-1}$), and a bilingual view that combines both languages after routing and scoring. This separation matters because the Egyptian information environment is genuinely bilingual. The experiments therefore test whether combining both languages adds signal or whether it adds noise.
-
-\section{Event-Aware Feature Variants}
-
-In addition to standard daily sentiment aggregation, the thesis evaluates event-aware features. Articles differ not only in polarity but also in event type, and not all events are equally likely to move a stock. The final pipeline labels articles using broad market-moving categories such as earnings, dividends, mergers and acquisitions, contracts and projects, expansion and investment, financing, and governance or disclosure.
-
-These labels support three feature strategies. The all-news strategy keeps every retained article in the daily aggregation in (\ref{eq:daily_aggregation}). The event-only strategy restricts the aggregation set $\mathcal{A}_{s,d-1}$ to event-related articles. The event-weighted strategy keeps all retained articles but multiplies the weight in (\ref{eq:article_weight}) by an additional event factor for event-related rows. This is not a full thematic NLP model, but it is a practical intermediate step toward richer event-aware relevance modelling.
-
-\section{Target Construction and Lagged Alignment}
-
-The target variables derive from future closing prices. For each trading day $t$ and forecast horizon $h$, the future return is defined as
+EGX30 closes are used only for label construction. For trading day $t$ and horizon $h \in \{1,3,5\}$, Equation~\ref{eq:return} defines the future return:
 \begin{equation}
 r_{t,h} = \frac{P_{t+h}}{P_t} - 1,
 \label{eq:return}
 \end{equation}
-where $P_t$ is the closing price on day $t$ and $P_{t+h}$ is the closing price after $h$ future trading days. A binary direction target is then defined as
+where $P_t$ is the EGX30 close on trading day $t$. Equation~\ref{eq:direction} gives the binary direction label:
 \begin{equation}
-y_{t,h}^{\text{dir}} =
-\begin{cases}
-1, & r_{t,h} > 0 \\
-0, & r_{t,h} \leq 0
-\end{cases}
+y_{t,h} = \mathbf{1}[r_{t,h} > 0].
 \label{eq:direction}
 \end{equation}
+The close values, returns, and horizon-end dates are excluded from the feature matrix. This keeps the model sentiment-only and avoids converting the thesis into a price-based forecasting study.
 
-The thesis evaluates three short forecast horizons, reported with the corresponding implementation settings in Chapter~\ref{chap:results}.
+\section{Baselines and Model Evaluation}
 
-Temporal alignment is one of the most important parts of the methodology. The daily sentiment $S_{s,d}$ in (\ref{eq:daily_aggregation}) is constructed from the prior calendar day, so the features available for trading day $t$ contain only news published before that trading date. This conservative lag is essential for avoiding subtle look-ahead effects and matches the saved configuration constants quoted above.
+The primary direction model is logistic regression with standardized sentiment features. Ridge regression is retained only as a secondary return-oriented diagnostic in the repository; the thesis interpretation focuses on direction classification.
 
-\section{Forecasting Framework}
+The direction model is compared with always-Up, always-Down, training-majority, rolling-majority, article-count-only, and shuffled-sentiment baselines. The always-class baselines expose label skew. The majority baselines test whether the model does more than follow historical class balance. The article-count-only baseline tests whether news volume alone explains performance. The shuffled-sentiment sanity check breaks sentiment timing while preserving the evaluation path.
 
-The forecasting layer is intentionally simple because the objective is to isolate the informational value of sentiment rather than to maximise performance through model complexity. The thesis therefore uses one low-capacity classifier for direction and one low-capacity regressor for future return. Feature standardisation, model selection, and classification-threshold selection are all performed chronologically on validation data only.
+The main metrics are accuracy, balanced accuracy, F1, MCC, actual Up share, predicted Up share, and delta versus the training-majority baseline. Balanced accuracy is prioritized because it is less likely than raw accuracy to reward majority-class prediction.
 
-Each ticker panel is sorted by date and divided into chronological training, validation, and test regions. Adjacent regions are separated by an embargo at least as long as the forecast horizon, which prevents overlapping target windows from leaking across splits. Final predictions are generated in an expanding-window walk-forward scheme. At every step, the model is trained only on rows whose target values are already known at the prediction date. This procedure is slower than a random split, but it is more credible. The exact hyperparameter values appear in Chapter~\ref{chap:results} together with the experimental setup.
+\section{Supplementary Historical XGBoost Integration}
 
-\section{Evaluation Metrics}
+After the sentiment-only benchmark is established, a supplementary integration experiment tests whether the same lagged market-mood signal improves a historical EGX30 forecasting model. This experiment uses the public EGX-Direction-Forecasting implementation by \texttt{anastamerr} as the historical-model reference and evaluates only its XGBoost classifier for the thesis discussion.
 
-The study reports both classification and regression metrics because the task has two outputs: future direction and future return. Directional evaluation uses accuracy, balanced accuracy, precision, recall, F1, and confusion-matrix counts. Return evaluation uses mean absolute error, root mean squared error, return sign accuracy, and the correlation between predicted and realised returns.
+The historical-only variant uses Mubasher EGX30 Open, High, Low, Close, Volume (OHLCV) data from 21 April 2016 through 20 April 2026. The external preprocessor builds price-derived historical features from this series. The augmented variant keeps the identical historical feature matrix and appends 49 one-day-lagged and rolling bilingual market-mood sentiment features from the thesis pipeline. Both variants therefore share the same target definition, train/test split, scaling path, and test labels.
 
-Balanced accuracy is treated as a primary metric rather than as an auxiliary one because the direction labels are not expected to be perfectly balanced across all ticker-horizon combinations. A model that leans too strongly toward the majority direction can still appear acceptable under raw accuracy alone. The reported metric set is therefore designed to expose that behaviour rather than to conceal it.
+This supplementary experiment is intentionally separated from the main sentiment-only evaluation. Its target follows the historical-model repository: a positive class is assigned when the future 5-session average price is above the past 10-session average price. Rows whose future-window target cannot be observed are removed before scoring. The split is chronological, with a gap of 15 rows between train and test to cover the future window and return lags.
 
-\section{Leakage Control and Validity Checks}
+\section{Leakage-Safe Validation and Robustness Checks}
 
-Leakage is a common failure mode in financial forecasting, so the final pipeline includes explicit validity checks beyond the main experiment loop. These checks verify that the historical rows used for any validation or test prediction do not extend into the future target window of the evaluation row. The checks also inspect source coverage and compare training, validation, and test behaviour, which prevents acceptance of suspiciously optimistic results without further scrutiny.
+Panels are sorted chronologically and split into training, validation, and test regions with an embargo at least as long as the forecast horizon. Hyperparameters and classification thresholds are selected on validation predictions only. Validation and test predictions use expanding walk-forward histories limited to rows whose target labels would already be observable.
 
-The overall intention of the methodology is conservative. The thesis prefers a weaker but believable result over an inflated result produced by loose alignment, optimistic evaluation, or metric choice. That choice matters even more given how thin bilingual EGX data is.
-
-\section{Auxiliary Experiment Protocols}
-
-Alongside the main benchmark, the thesis runs four auxiliary experiments to show how the research evolved and where it should go next. They do not replace the accepted final benchmark. Their job is to test specific surrounding claims and to make sure no exploratory work gets reported without proper documentation.
-
-The first auxiliary experiment returns to the original industrial motivation. An external EGX direction-forecasting repository developed during the Robin/Beltone internship is re-run as a historical price-based baseline. The same chronological train-test split is used for each ticker-model pair, and the baseline feature set is compared against an augmented version that adds one-day-lagged bilingual sentiment features. This design tests whether sentiment adds value inside a richer market-feature model, but it is treated as exploratory because the target formulation and feature regime differ from the stricter sentiment-only benchmark.
-
-The second auxiliary experiment evaluates direct sentiment-return association. Daily bilingual sentiment is shifted by one calendar day, aligned to later trading dates, and correlated with same-day, 1-day, 3-day, and 5-day returns. Pearson and Spearman correlations are reported together with five-day block-permutation p-values. This experiment is descriptive rather than causal. Its purpose is to check whether the raw sentiment score has a stable monotonic relationship with later returns before more complex forecasting models are interpreted.
-
-The third auxiliary experiment tests Arabic financial-domain adaptation. The Arabic article corpus is used for Masked Language Modeling adaptation of AraBERT, following the first stage of the FinBERT-style domain-adaptation logic. The adapted checkpoint is then evaluated against the original AraBERT model on held-out Arabic financial text under identical conditions: the same chronological 80/20 validation split, the same fixed seed of 42 across Python, NumPy, and PyTorch, the same base AraBERT tokenizer for both runs, and the identical evaluation script. This is a language-modelling evaluation, not a sentiment classification benchmark, and is therefore reported as a domain language modelling fit measurement rather than as supervised sentiment performance. A supervised Arabic financial sentiment model requires independent human-labeled examples, which are not available in the current thesis dataset.
-
-The fourth auxiliary experiment evaluates social-media feasibility. The target is a free, ethical, and officially approved route for adding social-media data. Reddit and X/Twitter are considered as candidate sources. The protocol rejects unofficial scraping and paid-access bypasses. Social media is therefore kept as future work unless approved official access is obtained and the resulting data can be handled without redistributing raw user content.
+The validity audit recomputes targets from pinned EGX30 closes, verifies one-day lagging, checks active membership, checks cross-company deduplication, enforces walk-forward history limits, and recomputes saved metrics from predictions. Additional robustness reports summarize coverage concentration, class imbalance, baseline comparisons, abstention on high-signal days, sector aggregation scaffolding, and the unavailability of true historical index weights.
 
 \section{Chapter Summary}
 
-This chapter described the full solution design. It starts from bilingual Mubasher news, scores articles using language-specific sentiment models, applies the confidence filter and weighted aggregation defined in equations (\ref{eq:confidence_filter})--(\ref{eq:daily_aggregation}), shifts the resulting daily features back by one calendar day to avoid look-ahead, and evaluates them under walk-forward validation. The four auxiliary experiment protocols were also defined here. The next chapter reports the implementation settings and the results.
+This chapter described the thesis method as a single reproducible workflow. The key design choice is to test bilingual financial-news sentiment without allowing price-derived predictors into the model matrix. Point-in-time membership, lagged aggregation, walk-forward evaluation, and validity audits are built into the design rather than added after the fact. The next chapter reports the empirical results.

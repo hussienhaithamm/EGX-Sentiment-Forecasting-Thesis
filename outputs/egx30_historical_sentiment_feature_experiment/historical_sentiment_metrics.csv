@@ -1,0 +1,3 @@
+ticker,variant,model,past_window,future_window,gap,train_rows,test_rows,feature_count,historical_feature_count,sentiment_feature_count,dropped_unobservable_target_rows,latest_valid_target_date,test_start,test_end,accuracy,balanced_accuracy,precision,recall,f1,auc
+EGX30,historical_only,xgboost,10,5,15,1758,425,18,18,0,5,2026-04-08,2024-05-16,2026-04-08,0.7388235294117647,0.7567076938922649,0.8884120171673819,0.708904109589041,0.7885714285714286,0.8475126171593368
+EGX30,historical_sentiment,xgboost,10,5,15,1758,425,67,18,49,5,2026-04-08,2024-05-16,2026-04-08,0.8023529411764706,0.7927052219590072,0.8851851851851852,0.8184931506849316,0.8505338078291815,0.8391440931094861
