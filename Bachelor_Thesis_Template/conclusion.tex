@@ -5,11 +5,11 @@ This final chapter summarizes what the thesis built, what the results show, and 
 
 \section{Conclusion}
 
-This thesis built a reproducible point-in-time study of bilingual financial-news sentiment for EGX30 direction classification. The study reconstructs historical EGX30 membership, collects Arabic and English constituent-linked news, scores sentiment with language-specific encoders, aggregates daily market mood, constructs EGX30 direction labels, and evaluates the result with walk-forward validation.
+This thesis built a reproducible point-in-time study of bilingual financial-news sentiment for EGX30 direction classification. The study reconstructs historical EGX30 membership and collects Arabic and English constituent-linked news. It scores sentiment with language-specific encoders, aggregates daily market mood, constructs EGX30 direction labels, and evaluates the result with walk-forward validation.
 
 The main empirical finding is conservative. The best bilingual row, FinBERT + CAMeLBERT at the 1-trading-day horizon, reaches accuracy 0.621 and balanced accuracy 0.545. This suggests limited but non-zero directional evidence. It does not show strong market predictability, and it does not justify a trading-system claim.
 
-A supplementary price-plus-sentiment experiment gives a stronger applied result. When the lagged bilingual sentiment features are added to an EGX30 historical XGBoost model, test accuracy improves from 0.739 to 0.802, balanced accuracy improves from 0.757 to 0.793, and F1 improves from 0.789 to 0.851. This supports the practical conclusion that sentiment is more effective as an incremental feature in a historical model than as a standalone index-direction signal.
+A supplementary price-plus-sentiment experiment gives a stronger applied result. The lagged bilingual sentiment features are added to an EGX30 historical XGBoost model. Test accuracy improves from 0.739 to 0.802, balanced accuracy improves from 0.757 to 0.793, and F1 improves from 0.789 to 0.851. This supports the practical conclusion that sentiment is more effective as an incremental feature in a historical model than as a standalone index-direction signal.
 
 The baseline and class-imbalance checks are central to that conclusion. Always-Up and majority baselines can achieve attractive raw accuracy because the test labels lean upward. Balanced accuracy, MCC, predicted Up share, and baseline deltas prevent the thesis from overstating the model.
 
@@ -19,7 +19,7 @@ The validity audit supports the evaluation protocol. It verifies target construc
 
 The study uses Mubasher as its main news source, so coverage may miss information from disclosures, broker reports, or other media. Coverage is also uneven across constituents even after point-in-time scoping. Some companies receive substantially more articles than others.
 
-The sentiment labels come from off-the-shelf encoders rather than expert-labeled Egyptian financial sentiment data. FinBERT is finance-specific for English, but the Arabic route depends on general Arabic encoders. This limits how confidently the thesis can interpret Arabic sentiment quality.
+The sentiment labels come from off-the-shelf encoders rather than expert-labeled Egyptian financial sentiment data. FinBERT is finance-specific for English. The Arabic route depends on general Arabic encoders, which limits how confidently the thesis can interpret Arabic sentiment quality.
 
 The main model is intentionally sentiment-only. This isolates the text signal, but it also means the main benchmark should not be compared directly with full trading models that use prices, technical indicators, or macro variables. The supplementary XGBoost integration addresses this comparison only for one historical-model family and one target definition.
 

@@ -5,28 +5,37 @@ This chapter reports the empirical results of the final EGX30 sentiment-only stu
 
 \section{Experimental Environment}
 
-The final scripts were executed on a local macOS environment. Table~\ref{tab:environment} records the main reproducibility settings. Large generated artifacts are kept in repository output folders, while the thesis reports only the compact metrics needed for interpretation.
+The final scripts ran on a local macOS environment. Table~\ref{tab:environment} records the main reproducibility settings. The repository keeps large generated artifacts in output folders. The thesis reports only the compact metrics needed for interpretation.
 
 \begin{table}[ht]
 \centering
-\caption{Experimental environment for the final reproducible run.}
+\caption{Experimental Environment for the Final Reproducible Run}
 \label{tab:environment}
 \small
-\begin{tabular}{ll}
+\begin{tabularx}{\textwidth}{p{4.0cm}X}
 \toprule
 Item & Value \\
 \midrule
 Operating system & macOS 26.5 (Build 25F71), arm64 \\
+Execution interface & Local shell in the Codex workspace \\
+Hardware & Apple M4, 10 CPU cores, 16 GB RAM \\
+Accelerator & No discrete GPU; final reproducibility pass used CPU execution \\
 Python & 3.9.6 \\
 Pandas & 2.3.3 \\
 NumPy & 1.26.4 \\
 Scikit-learn & 1.6.1 \\
+XGBoost & 2.1.4 \\
+PyTorch & 2.8.0 \\
+Transformers & 4.57.3 \\
+Requests & 2.32.5 \\
+BeautifulSoup & 4.14.2 \\
 Main direction model & Logistic regression on sentiment-only features \\
 Supplementary hybrid model & XGBoost on EGX30 OHLCV plus lagged sentiment \\
 Forecast horizons & 1, 3, and 5 trading days \\
 Validation design & Embargoed expanding-window walk-forward validation \\
+Deterministic seed policy & Seed 42 for model selection, shuffling checks, and Torch/NumPy adaptation runs \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \section{Dataset and Coverage Summary}
@@ -37,7 +46,7 @@ After point-in-time membership filtering and cross-company deduplication, the pr
 
 \begin{table}[ht]
 \centering
-\caption{Dataset and coverage summary.}
+\caption{Dataset and Coverage Summary}
 \label{tab:dataset_summary}
 \small
 \begin{tabular}{lr}
@@ -62,9 +71,9 @@ The Herfindahl-Hirschman Index (HHI) in Table~\ref{tab:dataset_summary} summariz
 
 \section{Model Settings and Threshold Selection}
 
-The direction models use standardized sentiment-side features and logistic regression with balanced class weights. The regularization parameter $C$ is selected from $\{0.01, 0.05, 0.1, 0.5, 1.0\}$ using validation walk-forward predictions only, with F1, balanced accuracy, and raw accuracy used as the selection order. This validation selection order follows the saved implementation, while the thesis interpretation prioritizes balanced accuracy because the test labels are imbalanced. Classification thresholds are also chosen from validation predictions only, using thresholds from 0.300 to 0.700 in steps of 0.025 and prioritizing balanced accuracy, then F1 and raw accuracy.
+The direction models use standardized sentiment-side features and logistic regression with balanced class weights. The regularization parameter $C$ is selected from $\{0.01, 0.05, 0.1, 0.5, 1.0\}$ using validation walk-forward predictions only. The selection order uses F1, balanced accuracy, and raw accuracy. The thesis interpretation still prioritizes balanced accuracy because the test labels are imbalanced. Classification thresholds are chosen from validation predictions only. The threshold grid runs from 0.300 to 0.700 in steps of 0.025 and prioritizes balanced accuracy, then F1 and raw accuracy.
 
-No test labels are used for hyperparameter or threshold selection. The selected $C$ values and classification thresholds are stored with the saved metrics in the following repository files:
+No test labels are used for hyperparameter or threshold selection. The repository stores the selected $C$ values and classification thresholds with the saved metrics:
 \begin{quote}
 \small
 \path{data/egx30_5yr_universe_metrics.csv}\\
@@ -78,7 +87,7 @@ The baseline comparison tests whether the sentiment model adds information beyon
 
 \begin{table}[!htbp]
 \centering
-\caption{Average test performance by baseline family.}
+\caption{Average Test Performance by Baseline Family}
 \label{tab:baseline_summary}
 \small
 \begin{tabular}{lrrrr}
@@ -99,7 +108,7 @@ Sentiment model & 0.498 & 0.505 & 0.550 & 0.017 \\
 
 Each value is averaged across the available test horizons, language views, and sentiment-source routes in the saved baseline comparison report.
 
-The always-Up and training-majority baselines have high average raw accuracy because the test labels lean upward. Their balanced accuracy remains exactly 0.500. This confirms why raw accuracy is not a sufficient headline metric for the thesis.
+The always-Up and training-majority baselines show high average raw accuracy because the test labels lean upward. Their balanced accuracy remains exactly 0.500. This confirms why raw accuracy is not a sufficient headline metric for the thesis.
 
 Table~\ref{tab:baseline_summary} is a compact summary over the saved baseline comparison rows. It is used to show the general class-imbalance pattern, not to replace the per-horizon baseline report. The full per-horizon and per-route baseline values are stored in \texttt{reports/egx30\_baseline\_comparison.csv}.
 
@@ -108,7 +117,7 @@ Figure~\ref{fig:h1_balanced_accuracy} focuses on the clearest 1-day bilingual co
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.82\textwidth]{balanced_accuracy_h1_comparison.png}
-\caption{Balanced accuracy comparison for the 1-day bilingual EGX30 test rows.}
+\caption{Balanced Accuracy Comparison for the 1-Day Bilingual EGX30 Test Rows}
 \label{fig:h1_balanced_accuracy}
 \end{figure}
 \FloatBarrier
@@ -119,7 +128,7 @@ Table~\ref{tab:egx30_results} reports the main bilingual test rows. The table in
 
 \begin{table}[!htbp]
 \centering
-\caption{EGX30 bilingual sentiment-only test metrics under strict walk-forward evaluation.}
+\caption{EGX30 Bilingual Sentiment-Only Test Metrics under Strict Walk-Forward Evaluation}
 \label{tab:egx30_results}
 \scriptsize
 \begin{tabular}{lrrrrrrr}
@@ -147,7 +156,7 @@ The historical-only variant uses EGX30 OHLCV-derived features from the historica
 
 \begin{table}[!htbp]
 \centering
-\caption{Supplementary XGBoost historical model with and without sentiment features.}
+\caption{Supplementary XGBoost Historical Model with and without Sentiment Features}
 \label{tab:xgb_hybrid_results}
 \small
 \begin{tabular}{lrrrrr}
@@ -181,7 +190,7 @@ The independent validity audit status is \texttt{PASS}. It checks 18 panels, 18,
 
 \begin{table}[!htbp]
 \centering
-\caption{Validity and robustness audit summary.}
+\caption{Validity and Robustness Audit Summary}
 \label{tab:validity_summary}
 \small
 \begin{tabular}{ll}
@@ -207,7 +216,7 @@ These checks do not establish that sentiment is strongly predictive. They suppor
 
 The results are useful, but they are not strong enough to support a trading claim. Balanced accuracy is close to 0.500 for several rows, and the best bilingual row reaches 0.545. This is above a random balanced baseline but far from strong directional discrimination.
 
-The baseline results explain why this matters. Always-Up and majority baselines can look strong under raw accuracy because the sample has an upward class bias. A thesis that selected results by raw accuracy would overstate the evidence. Selecting and interpreting results through balanced accuracy gives a more conservative conclusion.
+The baseline results explain why this matters. Always-Up and majority baselines can look strong under raw accuracy because the sample contains an upward class bias. A thesis that selected results by raw accuracy would overstate the evidence. Selecting and interpreting results through balanced accuracy gives a more conservative conclusion.
 
 Coverage also limits interpretation. The corpus is broad enough to support an index-level study, but some companies and sectors receive more news than others. Historical index weights are unavailable, so the thesis uses equal-weight market mood rather than claiming true index-weighted sentiment.
 

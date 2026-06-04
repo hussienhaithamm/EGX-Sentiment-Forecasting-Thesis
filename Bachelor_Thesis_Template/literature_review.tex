@@ -13,7 +13,7 @@ The lesson for this thesis is not that more complex models are always better. Th
 
 Social media is attractive because it is timely and large in volume. Studies of Twitter mood, message-board posts, and search signals report that aggregate public attention can relate to market behavior \cite{bollen2011twitter, nguyen2015social, mao2011predicting}. Arabic social-media work also suggests that Arabic investor discussion may contain information relevant to Arab market indices, including EGX30 \cite{alkhatib2016arabictweets}.
 
-These studies are useful as evidence that public language can matter, but they do not define the main scope of this thesis. Social media has access, noise, entity-linking, and redistribution constraints. For the final bachelor thesis, social media is therefore treated as future work, while the core study uses auditable financial-news pages.
+These studies are useful as evidence that public language can matter, but they do not define the main scope of this thesis. Social media creates access, noise, entity-linking, and redistribution constraints. For the final bachelor thesis, social media is therefore treated as future work, while the core study uses auditable financial-news pages.
 
 \section{Financial News and Stock Prediction}
 
@@ -23,7 +23,7 @@ These studies show that sentiment can be useful, but their settings differ from 
 
 \section{Domain-Specific and Arabic Sentiment Models}
 
-The English side of financial sentiment has strong domain-specific support. FinBERT was developed for financial text and improves over generic language models on financial sentiment tasks \cite{araci2019finbert}. This makes it a suitable English route for the thesis.
+The English side of financial sentiment draws on strong domain-specific support. FinBERT was developed for financial text and improves over generic language models on financial sentiment tasks \cite{araci2019finbert}. This makes it a suitable English route for the thesis.
 
 The Arabic side is less settled for finance-specific sentiment. AraBERT, ARBERT, MARBERT, and CAMeLBERT provide strong Arabic representations, but their benchmark success does not automatically establish forecasting value in EGX news \cite{antoun2020arabert, abdulmageed2021arbert, inoue2021camelbert}. This motivates comparing Arabic encoder routes inside the same sentiment-only EGX30 protocol.
 
@@ -40,7 +40,7 @@ Table~\ref{tab:related_matrix} summarizes representative studies using the dimen
 \begin{landscape}
 \begin{table}[p]
 \centering
-\caption{Comparison matrix for representative sentiment-based forecasting studies.}
+\caption{Comparison Matrix for Representative Sentiment-Based Forecasting Studies}
 \label{tab:related_matrix}
 \small
 \renewcommand{\arraystretch}{1.18}
@@ -56,13 +56,13 @@ Table~\ref{tab:related_matrix} summarizes representative studies using the dimen
 \toprule
 Study & Market & Language & Source & Sentiment / representation & Target & Evaluation & Relevance / limitation \\
 \midrule
-Bollen et al.\ \cite{bollen2011twitter} & DJIA & En & Twitter & Mood & Index dir. & Acc. & Aggregate mood; social-media/developed-market setting \\
-Nguyen et al.\ \cite{nguyen2015social} & 18 stocks & En & Boards & Topic sentiment & Stock dir. & Acc. & Entity filtering; not bilingual financial news \\
-Mohan et al.\ \cite{mohan2019news} & S\&P 500 & En & News & Deep fusion & Stock dir. & Model cmp. & Large panel; developed-market and price-fusion focused \\
-Dahal et al.\ \cite{dahal2023comparative} & Dev. stocks & En & News + market & Sentiment & Return reg. & RMSE, MAPE & Regression focus; not sentiment-only EGX30 direction \\
-Huang and Ho \cite{huang2021candlestick} & U.S. stocks & En & Social + charts & Fusion & Stock dir. & Acc. & Uses price-derived visual inputs \\
-Zhao et al.\ \cite{zhao2023integrated} & Hang Seng & Chinese & Opinion + market & Deep sentiment & Index dir. & Baselines & Index target; not Arabic-English news \\
-Liapis et al.\ \cite{liapis2023deep} & Benchmark & En & Sentiment + prices & Many setups & Horizons & Broad cmp. & Supports horizon-specific caution \\
+Twitter mood study \cite{bollen2011twitter} & DJIA & En & Twitter & Mood & Index dir. & Acc. & Aggregate mood; social-media/developed-market setting \\
+Message-board study \cite{nguyen2015social} & 18 stocks & En & Boards & Topic sentiment & Stock dir. & Acc. & Entity filtering; not bilingual financial news \\
+Large-scale news study \cite{mohan2019news} & S\&P 500 & En & News & Deep fusion & Stock dir. & Model cmp. & Large panel; developed-market and price-fusion focused \\
+News regression study \cite{dahal2023comparative} & Dev. stocks & En & News + market & Sentiment & Return reg. & RMSE, MAPE & Regression focus; not sentiment-only EGX30 direction \\
+Candlestick-fusion study \cite{huang2021candlestick} & U.S. stocks & En & Social + charts & Fusion & Stock dir. & Acc. & Uses price-derived visual inputs \\
+Integrated index study \cite{zhao2023integrated} & Hang Seng & Chinese & Opinion + market & Deep sentiment & Index dir. & Baselines & Index target; not Arabic-English news \\
+Benchmark study \cite{liapis2023deep} & Benchmark & En & Sentiment + prices & Many setups & Horizons & Broad cmp. & Supports horizon-specific caution \\
 Arabic encoder studies \cite{antoun2020arabert,inoue2021camelbert} & Arabic NLP & Ar & Benchmarks & Encoders & NLP tasks & F1 & Justifies routing; not an EGX30 forecast test \\
 \bottomrule
 \end{tabularx}

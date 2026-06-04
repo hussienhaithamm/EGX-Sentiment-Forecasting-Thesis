@@ -1,7 +1,7 @@
 \chapter{Methodology}
 \label{chap:methodology}
 
-This chapter explains the method used in the thesis. The motivation is to isolate bilingual financial-news sentiment before adding any price-based information, so the method starts from historical EGX30 membership, collects bilingual company-linked news, routes text to suitable sentiment models, builds daily market mood, constructs EGX30 direction labels, and evaluates the result with walk-forward validation.
+This chapter explains the method used in the thesis. The motivation is to isolate bilingual financial-news sentiment before adding any price-based information. The method starts from historical EGX30 membership, collects bilingual company-linked news, and routes text to suitable sentiment models. It then builds daily market mood, constructs EGX30 direction labels, and evaluates the result with walk-forward validation.
 
 \section{Overall Pipeline Architecture}
 
@@ -43,7 +43,7 @@ node distance=0.75cm and 0.65cm
 \draw[arrow] (eval) -- (audit);
 \end{tikzpicture}%
 }
-\caption{Overall pipeline architecture for the EGX30 sentiment-only study.}
+\caption{Overall Pipeline Architecture for the EGX30 Sentiment-Only Study}
 \label{fig:pipeline_architecture}
 \end{figure}
 
@@ -86,7 +86,7 @@ Table~\ref{tab:pit_registry} reports the intervals used by the final study. Two 
 
 \begin{table}[ht]
 \centering
-\caption{Point-in-time EGX30 registry intervals and active company counts.}
+\caption{Point-in-Time EGX30 Registry Intervals and Active Company Counts}
 \label{tab:pit_registry}
 \small
 \begin{tabular}{lll}
@@ -130,10 +130,10 @@ This contribution is still a text-derived quantity. It does not use prices, retu
 
 Article sentiment is first aggregated at the company-day level. For company $c$ on calendar day $d$, Equation~\ref{eq:company_sentiment} defines the daily company signal:
 \begin{equation}
-S_{c,d} = \frac{\sum_{i \in A_{c,d}} q_i}{\sum_{i \in A_{c,d}} w_i},
+S_{c,d} = \frac{\sum_{i \in A_{c,d}} q_i}{\sum_{i \in A_{c,d}} w_i}.
 \label{eq:company_sentiment}
 \end{equation}
-where $A_{c,d}$ is the set of scored articles linked to company $c$ on day $d$. If a company has no scored article on that day, its sentiment contribution is set to zero for equal-weight market aggregation.
+Here, $A_{c,d}$ is the set of scored articles linked to company $c$ on day $d$. If no scored article exists for a company on that day, its sentiment contribution is set to zero for equal-weight market aggregation.
 
 For the active EGX30 constituent set $C_d$, Equation~\ref{eq:pit_market_mood} gives the daily market-mood feature:
 \begin{equation}
@@ -168,7 +168,7 @@ The main metrics are accuracy, balanced accuracy, F1, MCC, actual Up share, pred
 
 \section{Supplementary Historical XGBoost Integration}
 
-After the sentiment-only benchmark is established, a supplementary integration experiment tests whether the same lagged market-mood signal improves a historical EGX30 forecasting model. This experiment uses the public EGX-Direction-Forecasting implementation by \texttt{anastamerr} as the historical-model reference and evaluates only its XGBoost classifier for the thesis discussion.
+After the sentiment-only benchmark is established, a supplementary integration experiment tests whether the same lagged market-mood signal improves a historical EGX30 forecasting model. This experiment uses the public EGX-Direction-Forecasting implementation by \texttt{anastamerr} as the historical-model reference and evaluates only its XGBoost classifier for the thesis discussion. The reference repository is \href{https://github.com/anastamerr/EGX-Direction-Forecasting}{\texttt{anastamerr/EGX-Direction-Forecasting}}.
 
 The historical-only variant uses Mubasher EGX30 Open, High, Low, Close, Volume (OHLCV) data from 21 April 2016 through 20 April 2026. The external preprocessor builds price-derived historical features from this series. The augmented variant keeps the identical historical feature matrix and appends 49 one-day-lagged and rolling bilingual market-mood sentiment features from the thesis pipeline. Both variants therefore share the same target definition, train/test split, scaling path, and test labels.
 

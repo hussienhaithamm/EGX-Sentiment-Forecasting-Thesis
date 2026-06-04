@@ -7,9 +7,9 @@ This chapter introduces the ideas behind the thesis design. It starts with finan
 
 Financial forecasting sits between economics, statistics, and machine learning. Prices react to public information, liquidity, expectations, and strategic trading. The efficient-market view argues that public information is rapidly incorporated into prices, which makes persistent predictability difficult \cite{fama1970}. Later work questions the strongest random-walk interpretation, but still supports the view that predictable structure is weak and unstable \cite{lo1988randomwalk}.
 
-This matters because a short-horizon forecasting result should not be accepted only because it has attractive raw accuracy. A useful study must define the target carefully, avoid future information, and compare against simple baselines. In this thesis, the target is not a future price level. It is the direction of the EGX30 index over short trading-day horizons.
+This matters because attractive raw accuracy alone cannot justify a short-horizon forecasting result. A useful study must define the target carefully, avoid future information, and compare against simple baselines. In this thesis, the target is not a future price level. It is the direction of the EGX30 index over short trading-day horizons.
 
-The distinction is important. Predicting a price level asks the model to estimate magnitude and direction at the same time. Direction classification asks a narrower question: whether the future index return is positive or negative. That narrower target fits the goal of this thesis because the study tests whether news sentiment has directional information, not whether it can estimate the size of the next market move.
+The distinction is important. Predicting a price level asks the model to estimate magnitude and direction at the same time. Direction classification asks a narrower question: whether the future index return is positive or negative. That narrower target fits the goal of this thesis because the study tests whether news sentiment contains directional information, not whether it can estimate the size of the next market move.
 
 \section{Directional Labels and Input Modalities}
 
@@ -29,11 +29,11 @@ This issue is not only statistical. It changes the story a result can support. A
 
 Financial news can describe information that historical prices do not encode directly. Prior work shows that media tone, message-board language, and financial dictionaries can relate to market outcomes, but the usefulness of the signal depends on source quality, entity relevance, and aggregation \cite{tetlock2007media, das2007yahoo, loughran2011liability, kearney2014survey}.
 
-Financial news is usually cleaner than social media because articles are longer, more structured, and more often tied to identifiable companies. It is still imperfect. A company-page article may be weakly related to the firm, repeated across pages, or published outside trading hours. These issues motivate relevance weighting, deduplication, and lagged alignment in the methodology.
+Financial news provides longer and more structured texts than social media, and company-page articles offer direct firm identifiers for downstream alignment. It is still imperfect. A company-page article may be weakly related to the firm, repeated across pages, or published outside trading hours. These issues motivate relevance weighting, deduplication, and lagged alignment in the methodology.
 
 \section{Domain-Specific Financial NLP}
 
-General sentiment models can misread financial language. Words such as ``liability'', ``capital'', or ``debt'' may have domain-specific meanings that differ from everyday sentiment. FinBERT addresses this issue for English financial text and is therefore a suitable English sentiment encoder for this thesis \cite{araci2019finbert}.
+General sentiment models can misread financial language. Words such as ``liability'', ``capital'', or ``debt'' can carry domain-specific meanings that differ from everyday sentiment. FinBERT addresses this issue for English financial text and is therefore a suitable English sentiment encoder for this thesis \cite{araci2019finbert}.
 
 The choice of sentiment model matters because sentence-level errors accumulate into daily market-mood features. A weak sentiment classifier can create noisy aggregate signals even if the forecasting model is correctly validated. For this reason, the thesis treats sentiment scoring as part of the research method rather than as a black-box preprocessing step.
 
